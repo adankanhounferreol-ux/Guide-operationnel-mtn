@@ -1,0 +1,2774 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Guide Opérationnel MTN 2026</title>
+
+<style>
+:root{
+    --blue:#3F8FED;
+    --blue-dark:#003E85;
+    --blue-light:#eaf3ff;
+
+    --green:#198754;
+    --green-light:#eaf8f0;
+
+    --orange:#f39c12;
+    --orange-light:#fff5df;
+
+    --red:#d63031;
+    --red-light:#fff0f0;
+
+    --purple:#6f42c1;
+    --purple-light:#f3edff;
+
+    --yellow:#FFCC08;
+    --yellow-dark:#8a6d00;
+    --yellow-light:#fffaeb;
+
+    --dark:#000000;
+    --text:#344054;
+    --gray:#667085;
+    --light:#f5f7fa;
+    --border:#e4e7ec;
+    --white:#ffffff;
+
+    --sidebar:270px;
+}
+
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+}
+
+html{
+    scroll-behavior:smooth;
+}
+
+body{
+    font-family:Arial, Helvetica, sans-serif;
+    background:var(--light);
+    color:var(--text);
+    line-height:1.6;
+}
+
+/* =========================
+   SIDEBAR
+========================= */
+
+.sidebar{
+    position:fixed;
+    left:0;
+    top:0;
+    width:var(--sidebar);
+    height:100vh;
+    background:var(--white);
+    border-right:1px solid var(--border);
+    z-index:1000;
+    overflow-y:auto;
+}
+
+.logo{
+    padding:25px 20px;
+    background:var(--blue);
+    color:white;
+    border-top:4px solid var(--yellow);
+}
+
+.logo small{
+    display:block;
+    font-size:11px;
+    opacity:.85;
+    text-transform:uppercase;
+    letter-spacing:1px;
+}
+
+.logo h1{
+    font-size:19px;
+    margin-top:5px;
+}
+
+.menu{
+    padding:15px 10px;
+}
+
+.menu-title{
+    font-size:11px;
+    color:var(--gray);
+    text-transform:uppercase;
+    font-weight:bold;
+    padding:15px 12px 7px;
+}
+
+.menu a{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:11px 12px;
+    margin:3px 0;
+    color:var(--text);
+    text-decoration:none;
+    border-radius:7px;
+    font-size:14px;
+    transition:.2s;
+}
+
+.menu a:hover{
+    background:var(--blue-light);
+    color:var(--blue);
+}
+
+.menu a.active{
+    background:var(--blue);
+    color:white;
+}
+
+/* =========================
+   MAIN
+========================= */
+
+.main{
+    margin-left:var(--sidebar);
+    min-height:100vh;
+}
+
+/* =========================
+   TOPBAR
+========================= */
+
+.topbar{
+    position:sticky;
+    top:0;
+    z-index:900;
+    background:rgba(255,255,255,.96);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--border);
+    padding:12px 30px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:20px;
+}
+
+.search{
+    flex:1;
+    max-width:650px;
+    position:relative;
+}
+
+.search input{
+    width:100%;
+    padding:13px 45px 13px 16px;
+    border:1px solid var(--border);
+    border-radius:8px;
+    font-size:14px;
+    outline:none;
+}
+
+.search input:focus{
+    border-color:var(--blue);
+    box-shadow:0 0 0 3px rgba(19,87,166,.1);
+}
+
+.search-icon{
+    position:absolute;
+    right:15px;
+    top:12px;
+}
+
+.top-actions{
+    display:flex;
+    gap:8px;
+}
+
+.btn{
+    border:none;
+    padding:10px 14px;
+    border-radius:7px;
+    cursor:pointer;
+    font-weight:bold;
+    font-size:13px;
+}
+
+.btn-primary{
+    background:var(--blue);
+    color:white;
+}
+
+.btn-light{
+    background:var(--light);
+    color:var(--text);
+}
+
+/* =========================
+   CONTENT
+========================= */
+
+.content{
+    max-width:1300px;
+    margin:auto;
+    padding:40px 35px 80px;
+}
+
+.hero{
+    background:linear-gradient(135deg,var(--blue-dark),var(--blue));
+    color:white;
+    padding:55px 50px;
+     padding-right:230px;
+    border-radius:15px;
+    margin-bottom:30px;
+    position:relative;
+    overflow:hidden;
+    border-bottom:5px solid var(--yellow);
+}
+
+ .hero-logo{
+     position:absolute;
+     top:18px;
+     right:18px;
+     width:165px;
+     height:auto;
+     display:block;
+     border-radius:8px;
+     box-shadow:0 8px 22px rgba(0,0,0,.20);
+     z-index:2;
+ }
+
+.hero small{
+    text-transform:uppercase;
+    letter-spacing:2px;
+    opacity:.85;
+}
+
+.hero h2{
+    font-size:38px;
+    margin:10px 0;
+}
+
+.hero p{
+    max-width:750px;
+    opacity:.9;
+}
+
+.hero-tags{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+    margin-top:20px;
+}
+
+.hero-tag{
+    background:rgba(255,255,255,.15);
+    border:1px solid rgba(255,255,255,.3);
+    padding:6px 12px;
+    border-radius:20px;
+    font-size:12px;
+}
+
+.quick-search{
+    margin-top:25px;
+}
+
+.quick-search input{
+    width:100%;
+    max-width:700px;
+    padding:15px 18px;
+    border:none;
+    border-radius:8px;
+    font-size:15px;
+}
+
+/* =========================
+   SECTION
+========================= */
+
+.section{
+    margin-top:50px;
+    scroll-margin-top:90px;
+}
+
+.section-header{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    margin-bottom:10px;
+}
+
+.section-header h2{
+    font-size:25px;
+    color:var(--dark);
+}
+
+.section-header span{
+    font-size:25px;
+}
+
+.section-intro{
+    color:var(--gray);
+    font-size:14px;
+    margin-bottom:20px;
+    max-width:850px;
+}
+
+/* =========================
+   CARDS
+========================= */
+
+.cards{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
+    gap:16px;
+}
+
+.card{
+    background:white;
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:22px;
+    transition:.2s;
+    cursor:pointer;
+}
+
+.card:hover{
+    transform:translateY(-2px);
+    box-shadow:0 8px 25px rgba(0,0,0,.07);
+}
+
+.card-icon{
+    font-size:28px;
+    margin-bottom:10px;
+}
+
+.card h3{
+    color:var(--dark);
+    font-size:17px;
+    margin-bottom:6px;
+}
+
+.card p{
+    color:var(--gray);
+    font-size:13px;
+}
+
+/* =========================
+   PROCEDURE
+========================= */
+
+.procedure{
+    background:white;
+    border:1px solid var(--border);
+    border-left:5px solid var(--blue);
+    border-radius:10px;
+    padding:25px;
+    margin-bottom:20px;
+}
+
+.procedure h3{
+    color:var(--dark);
+    margin-bottom:15px;
+}
+
+.procedure h4{
+    color:var(--dark);
+    font-size:14px;
+    margin:18px 0 8px;
+}
+
+.procedure ul{
+    margin:8px 0 8px 20px;
+    font-size:14px;
+}
+
+.procedure ul li{
+    margin-bottom:6px;
+}
+
+.procedure p{
+    font-size:14px;
+    margin-bottom:8px;
+}
+
+.subheading{
+    color:var(--blue-dark);
+    font-size:18px;
+    margin:24px 0 12px;
+    padding-bottom:7px;
+    border-bottom:2px solid var(--yellow);
+}
+
+.procedure a{
+    color:var(--blue-dark);
+    font-weight:700;
+    text-decoration:none;
+    word-break:break-word;
+}
+
+.procedure a:hover{
+    text-decoration:underline;
+}
+
+.procedure .note{
+    padding:12px 14px;
+    margin:12px 0;
+    background:var(--light);
+    border-left:4px solid var(--gray);
+    border-radius:6px;
+    font-size:14px;
+}
+
+.step{
+    display:flex;
+    gap:15px;
+    margin:12px 0;
+    font-size:14px;
+}
+
+.step-number{
+    min-width:30px;
+    height:30px;
+    background:var(--blue);
+    color:white;
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-weight:bold;
+    font-size:13px;
+    flex-shrink:0;
+}
+
+/* =========================
+   ALERT BOXES
+========================= */
+
+.box{
+    padding:16px;
+    border-radius:8px;
+    margin-top:15px;
+    font-size:14px;
+}
+
+.info{
+    background:var(--blue-light);
+    border-left:4px solid var(--blue);
+}
+
+.success{
+    background:var(--green-light);
+    border-left:4px solid var(--green);
+}
+
+.warning{
+    background:var(--orange-light);
+    border-left:4px solid var(--orange);
+}
+
+.danger{
+    background:var(--red-light);
+    border-left:4px solid var(--red);
+}
+
+.tool{
+    background:var(--purple-light);
+    border-left:4px solid var(--purple);
+}
+
+/* =========================
+   SCRIPT / USSD
+========================= */
+
+.script{
+    background:#f8f9fb;
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:20px;
+    margin-bottom:15px;
+}
+
+.script-label{
+    color:var(--blue);
+    font-weight:bold;
+    font-size:12px;
+    text-transform:uppercase;
+    margin-bottom:8px;
+}
+
+.script-text{
+    background:white;
+    padding:15px;
+    border-radius:7px;
+    border:1px solid var(--border);
+    font-size:14px;
+}
+
+.ussd{
+    display:inline-block;
+    background:var(--dark);
+    color:var(--yellow);
+    font-family:"Courier New",monospace;
+    font-weight:bold;
+    padding:3px 9px;
+    border-radius:5px;
+    font-size:13px;
+}
+
+/* =========================
+   TABLES
+========================= */
+
+.table-wrap{
+    overflow-x:auto;
+    margin-top:15px;
+    border-radius:8px;
+    border:1px solid var(--border);
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+    font-size:13px;
+    background:white;
+}
+
+th,td{
+    padding:10px 12px;
+    border-bottom:1px solid var(--border);
+    text-align:left;
+    white-space:nowrap;
+}
+
+th{
+    background:var(--blue-light);
+    color:var(--blue-dark);
+    font-size:12px;
+    text-transform:uppercase;
+    letter-spacing:.3px;
+}
+
+tr:nth-child(even) td{
+    background:#fafbfc;
+}
+
+.table-title{
+    font-size:13px;
+    font-weight:bold;
+    color:var(--dark);
+    margin-top:20px;
+}
+
+/* =========================
+   FAQ / ACCORDION
+========================= */
+
+.faq{
+    background:white;
+    border:1px solid var(--border);
+    border-radius:9px;
+    margin-bottom:10px;
+    overflow:hidden;
+}
+
+.faq-question{
+    padding:16px;
+    cursor:pointer;
+    font-weight:bold;
+    color:var(--dark);
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:10px;
+    font-size:14px;
+}
+
+.faq-question .ussd{
+    font-weight:normal;
+    margin-left:auto;
+}
+
+.faq-answer{
+    display:none;
+    padding:0 16px 18px;
+    color:var(--text);
+    font-size:14px;
+}
+
+.faq-answer ul{
+    margin:8px 0 8px 20px;
+}
+
+.faq-answer li{
+    margin-bottom:5px;
+}
+
+.faq-answer p{
+    margin-bottom:8px;
+}
+
+.faq.open .faq-answer{
+    display:block;
+}
+
+/* =========================
+   SEARCH RESULTS
+========================= */
+
+#searchResults{
+    display:none;
+    background:white;
+    border:1px solid var(--border);
+    border-radius:10px;
+    margin-top:10px;
+    padding:15px;
+    position:absolute;
+    width:100%;
+    max-width:650px;
+    z-index:950;
+    max-height:400px;
+    overflow-y:auto;
+}
+
+.result{
+    padding:12px;
+    border-bottom:1px solid var(--border);
+    cursor:pointer;
+}
+
+.result:last-child{
+    border-bottom:none;
+}
+
+.result:hover{
+    background:var(--light);
+}
+
+.result strong{
+    color:var(--blue);
+}
+
+/* =========================
+   FOOTER
+========================= */
+
+footer{
+    background:var(--dark);
+    color:white;
+    text-align:center;
+    padding:30px;
+    margin-top:50px;
+    border-top:4px solid var(--yellow);
+}
+
+footer p{
+    font-size:12px;
+    opacity:.7;
+}
+
+/* =========================
+   MOBILE
+========================= */
+
+.mobile-menu{
+    display:none;
+}
+
+@media(max-width:800px){
+
+    :root{
+        --sidebar:0px;
+    }
+
+    .sidebar{
+        transform:translateX(-100%);
+        transition:.3s;
+        width:270px;
+    }
+
+    .sidebar.open{
+        transform:translateX(0);
+    }
+
+    .main{
+        margin-left:0;
+    }
+
+    .mobile-menu{
+        display:block;
+    }
+
+    .topbar{
+        padding:10px 15px;
+    }
+
+    .content{
+        padding:25px 15px 60px;
+    }
+
+    .hero{
+        padding:35px 25px;
+        padding-right:25px;
+        padding-top:115px;
+    }
+
+    .hero-logo{
+        width:135px;
+        top:15px;
+        right:15px;
+    }
+
+    .hero h2{
+        font-size:26px;
+    }
+
+    .top-actions{
+        display:none;
+    }
+
+    table{
+        font-size:12px;
+    }
+}
+
+/* =========================
+   PRINT
+========================= */
+
+@media print{
+
+    .sidebar,
+    .topbar,
+    .mobile-menu{
+        display:none;
+    }
+
+    .main{
+        margin:0;
+    }
+
+    .content{
+        max-width:none;
+    }
+
+    .faq-answer{
+        display:block !important;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<!-- =========================
+     SIDEBAR
+========================= -->
+
+<aside class="sidebar" id="sidebar">
+
+    <div class="logo">
+        <small>Documentation interne · Juillet &amp; Août 2026</small>
+        <h1>📶 Guide Opérationnel MTN</h1>
+    </div>
+
+    <nav class="menu">
+
+        <div class="menu-title">Navigation</div>
+
+        <a href="#accueil" class="active">🏠 Accueil</a>
+        <a href="#acces-rapide">⚡ Accès rapide</a>
+
+        <div class="menu-title">Opérations</div>
+
+        <a href="#procedures">📋 Procédures</a>
+        <a href="#scripts">💬 Trame du discours</a>
+
+        <div class="menu-title">MoMo &amp; Financement</div>
+
+        <a href="#momokash">💰 MoMoKash &amp; emprunts</a>
+        <a href="#mobile-money">💳 Mobile Money &amp; transferts</a>
+        <a href="#terminaux">📱 Terminaux &amp; Device Financing</a>
+
+        <div class="menu-title">Réseau &amp; International</div>
+
+        <a href="#roaming">🌍 Roaming &amp; international</a>
+        <a href="#volte">📞 VoLTE</a>
+
+        <div class="menu-title">Offres &amp; Services</div>
+
+        <a href="#forfaits">🌐 Forfaits internet</a>
+        <a href="#services">🛠 Services &amp; offres MTN</a>
+        <a href="#frais-transfert">🧾 Frais de transfert régional</a>
+
+        <div class="menu-title">Support &amp; qualité</div>
+
+        <a href="#faq">❓ FAQ</a>
+        <a href="#reclamations">⚠️ Réclamations</a>
+        <a href="#incidents">🚨 Incidents &amp; escalades</a>
+        <a href="#outils">🛠️ Outils &amp; processus</a>
+        <a href="#bonnes-pratiques">⭐ BEST PRATICES</a>
+
+        <div class="menu-title">Ressources</div>
+
+        <a href="#glossaire">📚 Glossaire</a>
+
+    </nav>
+
+</aside>
+
+
+<!-- =========================
+     MAIN
+========================= -->
+
+<main class="main">
+
+    <header class="topbar">
+
+        <button class="btn btn-light mobile-menu"
+                onclick="toggleMenu()">
+            ☰
+        </button>
+
+        <div class="search">
+
+            <input
+                type="search"
+                id="searchInput"
+                placeholder="🔎 Rechercher : MoMoKash, Reset PIN, Plainte réseau, PUK, Self Reversal..."
+                oninput="searchGuide()">
+
+            <span class="search-icon">⌕</span>
+
+            <div id="searchResults"></div>
+
+        </div>
+
+        <div class="top-actions">
+
+            <button class="btn btn-light"
+                    onclick="window.print()">
+                🖨 Imprimer
+            </button>
+
+            <button class="btn btn-primary"
+                    onclick="goHome()">
+                🏠 Accueil
+            </button>
+
+        </div>
+
+    </header>
+
+
+    <div class="content">
+
+        <!-- ACCUEIL -->
+
+        <section id="accueil">
+
+            <div class="hero">
+
+                <img class="hero-logo" src="data:image/png;base64,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" alt="Logo MTN">
+                <small>Base de connaissances opérationnelle — Team Digital</small>
+
+                <h2>Guide Opérationnel MTN 2026</h2>
+
+                <p>
+                    Toutes les actualités et procédures de Juillet &amp; Août 2026 :
+                    MoMoKash, Kpede Kpede &amp; Device Financing, Roaming &amp; VoLTE,
+                    Mobile Money, forfaits et services MTN — centralisées dans un
+                    support unique pour une prise en charge rapide et homogène des abonnés.
+                </p>
+
+                <div class="hero-tags">
+                    <span class="hero-tag">💰 MoMoKash</span>
+                    <span class="hero-tag">📱 Kpede Kpede</span>
+                    <span class="hero-tag">🌍 Roaming ECOWAS</span>
+                    <span class="hero-tag">📞 VoLTE</span>
+                    <span class="hero-tag">💳 MoMoSayaa</span>
+                    <span class="hero-tag">🌐 Forfaits Internet</span>
+                </div>
+
+                <div class="quick-search">
+
+                    <input
+                        type="text"
+                        placeholder="🔎 Que recherchez-vous ?"
+                        oninput="syncSearch(this.value)">
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ACCÈS RAPIDE -->
+
+        <section id="acces-rapide" class="section">
+
+            <div class="section-header">
+                <span>⚡</span>
+                <h2>Accès rapide</h2>
+            </div>
+
+            <div class="cards">
+
+                <div class="card" onclick="goTo('momokash')">
+                    <div class="card-icon">💰</div>
+                    <h3>MoMoKash &amp; emprunts</h3>
+                    <p>Règles d'éligibilité, cashback ciblé, accès au prêt.</p>
+                </div>
+
+                <div class="card" onclick="goTo('mobile-money')">
+                    <div class="card-icon">💳</div>
+                    <h3>Mobile Money &amp; transferts</h3>
+                    <p>MoMo Express, MoMoSayaa, relevés, transferts régionaux.</p>
+                </div>
+
+                <div class="card" onclick="goTo('terminaux')">
+                    <div class="card-icon">📱</div>
+                    <h3>Terminaux &amp; Device Financing</h3>
+                    <p>Déblocage Kpede Kpede, A36 / A56 / V80.</p>
+                </div>
+
+                <div class="card" onclick="goTo('roaming')">
+                    <div class="card-icon">🌍</div>
+                    <h3>Roaming &amp; international</h3>
+                    <p>Diagnostic USA, tarifs Inde, Free Roaming ECOWAS.</p>
+                </div>
+
+                <div class="card" onclick="goTo('volte')">
+                    <div class="card-icon">📞</div>
+                    <h3>VoLTE</h3>
+                    <p>Activation par marque de téléphone.</p>
+                </div>
+
+                <div class="card" onclick="goTo('forfaits')">
+                    <div class="card-icon">🌐</div>
+                    <h3>Forfaits internet</h3>
+                    <p>Activation, grille tarifaire, extension, KDO.</p>
+                </div>
+
+                <div class="card" onclick="goTo('services')">
+                    <div class="card-icon">🛠</div>
+                    <h3>Services &amp; offres MTN</h3>
+                    <p>Me2U, Canal+, Xtratime, eSIM, Flexi, TV et plus.</p>
+                </div>
+
+                <div class="card" onclick="goTo('frais-transfert')">
+                    <div class="card-icon">🧾</div>
+                    <h3>Frais de transfert régional</h3>
+                    <p>Grilles tarifaires par opérateur partenaire.</p>
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- PROCÉDURES GÉNÉRALES -->
+
+        <section id="procedures" class="section">
+
+            <div class="section-header">
+                <span>📋</span>
+                <h2>Procédures opérationnelles</h2>
+            </div>
+
+            <div class="procedure">
+
+                <h3>Procédure — Prise en charge d'une demande client</h3>
+
+                <div class="box info">
+                    <strong>Objectif</strong><br>
+                    Assurer une prise en charge professionnelle,
+                    rapide et homogène du client.
+                </div>
+
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div>
+                        <strong>Écouter la demande</strong>
+                        <p>Laisser le client exposer clairement son besoin.</p>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div>
+                        <strong>Identifier le besoin</strong>
+                        <p>Reformuler la demande afin de vérifier sa bonne compréhension.</p>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div>
+                        <strong>Apporter une réponse</strong>
+                        <p>Utiliser les informations et procédures disponibles dans le guide.</p>
+                    </div>
+                </div>
+
+                <div class="box warning">
+                    <strong>⚠️ Point de vigilance</strong><br>
+                    Ne jamais communiquer une information non vérifiée au client.
+                </div>
+
+                <div class="box success">
+                    <strong>✅ À retenir</strong><br>
+                    Écouter → Comprendre → Vérifier → Répondre → Accompagner.
+                </div>
+
+            </div>
+
+            <div class="procedure">
+
+                <h3>Procédure — Escalade d'une demande</h3>
+
+                <div class="box info">
+                    <strong>Quand l'utiliser ?</strong><br>
+                    Lorsque la demande ne peut pas être résolue au premier niveau de prise en charge.
+                </div>
+
+                <div class="step"><div class="step-number">1</div><div>Identifier précisément le problème.</div></div>
+                <div class="step"><div class="step-number">2</div><div>Vérifier les informations déjà disponibles.</div></div>
+                <div class="step"><div class="step-number">3</div><div>Transmettre les éléments nécessaires à l'équipe concernée.</div></div>
+
+                <div class="box danger">
+                    <strong>🚨 Escalade</strong><br>
+                    Ne pas laisser le client sans information sur la suite de sa demande.
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- SCRIPTS -->
+
+        <section id="scripts" class="section">
+
+            <div class="section-header">
+                <span>💬</span>
+                <h2>Trame du discours</h2>
+            </div>
+
+            <p class="section-intro">
+                Formulations types à utiliser par les agents du Service Client MTN.
+            </p>
+
+            <div class="script">
+                <div class="script-label">Accueil / ouverture de l'appel</div>
+                <div class="script-text">
+                    <p>« Y'ello ! Je suis Fèmi du Service Client MTN. En quoi puis-je vous être utile ? »</p>
+                    <p>« Y'ello ! Je suis Fèmi du Service Client MTN. »</p>
+                    <p>« Je vais très bien. J'espère qu'il en est de même pour vous. En quoi puis-je vous être utile ? »</p>
+                    <p>« Je serai également ravi de connaître votre nom. »</p>
+                </div>
+            </div>
+
+            <div class="script">
+                <div class="script-label">Mise en attente</div>
+                <div class="script-text">
+                    <p>« Prière patienter l'instant de vérifications adéquates à effectuer. »</p>
+                </div>
+            </div>
+
+            <div class="script">
+                <div class="script-label">Reformulation / diagnostic</div>
+                <div class="script-text">
+                    <p>« Merci de nous reformuler votre demande pour une meilleure prise en charge. »</p>
+                    <p>« Quel est le message d'erreur que vous recevez ? »</p>
+                </div>
+            </div>
+
+            <div class="script">
+                <div class="script-label">Recueil de la préoccupation</div>
+                <div class="script-text">
+                    <p>« Je vous saurai gré de me faire part de votre préoccupation. »</p>
+                    <p>« Merci de partager avec moi votre préoccupation. »</p>
+                    <p>« Souhaitez-vous me faire part de votre préoccupation pour assistance s'il vous plaît ? »</p>
+                    <p>« Avez-vous compris s'il vous plaît ? »</p>
+                </div>
+            </div>
+
+            <div class="script">
+                <div class="script-label">Identification du numéro concerné</div>
+                <div class="script-text">
+                    <p>« Merci de me communiquer le numéro concerné pour des vérifications. »</p>
+                    <p>« Merci de me préciser le numéro ayant effectué l'opération. »</p>
+                </div>
+            </div>
+
+            <div class="script">
+                <div class="script-label">Remerciement</div>
+                <div class="script-text">
+                    <p>« Je vous en prie ! Je suis là pour votre plus grande satisfaction. C'est plutôt MTN qui vous remercie. »</p>
+                </div>
+            </div>
+
+            <div class="script">
+                <div class="script-label">Clôture (Closing)</div>
+                <div class="script-text">
+                    <p>« Ce fut un réel plaisir de vous assister, M. Ferreol. Pour simplifier nos prochains échanges et bénéficier d'une prise en charge encore plus rapide, n'hésitez pas à nous écrire sur notre tout nouveau canal WhatsApp désormais disponible au 69000000. MTN vous remercie pour votre fidélité et votre confiance. Passez une excellente journée. Au revoir ! »</p>
+                    <p>« Nous restons à votre entière disposition pour d'éventuelles préoccupations relatives aux produits et services MTN. MTN vous souhaite une excellente journée. »</p>
+                    <p>« C'est très aimable. Pour d'éventuelles demandes, n'hésitez pas à nous recontacter. MTN vous remercie pour votre fidélité. Au revoir Monsieur / Madame X. »</p>
+                    <p>« M. / Mme xxxx, dans l'attente de votre entière satisfaction, MTN vous remercie pour votre fidélité et vous souhaite une agréable journée / soirée. »</p>
+                    <p>« Dans l'attente de vous lire à nouveau, MTN vous souhaite une excellente journée. Nous restons à votre entière disposition 24h/24 et 7jours/7. »</p>
+                </div>
+            </div>
+
+            <div class="script">
+                <div class="script-label">Orientation canal WhatsApp</div>
+                <div class="script-text">
+                    <p>« Merci de nous avoir contacté. Vous pouvez nous joindre sur le canal WhatsApp en cliquant sur le lien suivant : <a href="https://wa.me/+22961000000" target="_blank" rel="noopener">https://wa.me/+22961000000</a> »</p>
+                </div>
+            </div>
+
+            <div class="box success">
+                <strong>📣 Annonce à relayer — Transferts MoMo gratuits</strong><br>
+                « BONNE NOUVELLE ! Les transferts entre abonnés sont désormais GRATUITS sur MTN MoMo. »
+                L'application MTN MoMo est disponible sur
+                <a href="https://bit.ly/3yh3jqR" target="_blank" rel="noopener">PlayStore</a>
+                et sur
+                <a href="http://lnnk.in/eHcg" target="_blank" rel="noopener">AppStore</a>.
+            </div>
+
+            <div class="script">
+                <div class="script-label">Agence</div>
+                <div class="script-text">
+                    <p>« Précisez-moi votre zone de résidence pour une orientation en agence. »</p>
+                </div>
+            </div>
+
+        </section>
+
+
+        <!-- MOMOKASH -->
+
+        <section id="momokash" class="section">
+
+            <div class="section-header">
+                <span>💰</span>
+                <h2>MoMoKash &amp; campagnes ciblées</h2>
+            </div>
+
+            <p class="section-intro">
+                Définition, accès au service, règles d'éligibilité et communications
+                promotionnelles ciblées.
+            </p>
+
+            <div class="procedure">
+
+                <h3>Définition</h3>
+
+                <p>
+                    MoMoKash est un service de prêt proposé en partenariat avec UBA via
+                    MTN MoMo. Il permet aux clients éligibles d'emprunter de l'argent
+                    directement depuis leur téléphone et de rembourser automatiquement via
+                    leur portefeuille MTN.
+                </p>
+
+            </div>
+
+            <div class="procedure">
+
+                <h3>Comment accéder au service de prêt MoMoKash</h3>
+
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div>Composer <span class="ussd">*880#</span> puis <span class="ussd">5</span> puis <span class="ussd">3</span>.</div>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div>Accepter les conditions générales d'utilisation, puis le partage des données avec les partenaires.</div>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div>Sous 24h à 48h, le client reçoit un message confirmant ou non son éligibilité et lui donnant accès au prêt.</div>
+                </div>
+
+                <div class="table-wrap">
+                    <table>
+                        <tr><th>Paramètre</th><th>Détail</th></tr>
+                        <tr><td>Montant minimum</td><td>1 000 FCFA</td></tr>
+                        <tr><td>Montant maximum</td><td>150 000 FCFA</td></tr>
+                        <tr><td>Durées disponibles</td><td>7 jours · 14 jours · 30 jours</td></tr>
+                        <tr><td>Frais</td><td>Entre 9 % et 14 %, selon la durée choisie, l'utilisation MoMo et l'historique de remboursement</td></tr>
+                    </table>
+                </div>
+
+                <div class="box info">
+                    La limite de prêt dépend de l'utilisation de MTN MoMo (paiements, transferts,
+                    récurrence d'usage) et de l'historique de remboursement du client. Le montant
+                    exact des frais selon la durée choisie est affiché avant validation du prêt.
+                </div>
+
+            </div>
+
+            <div class="procedure">
+
+                <h3>MoMoKash — Nouvelle règle d'éligibilité</h3>
+
+                <div class="box info">
+                    <strong>Ce qui change</strong>
+                    <ul>
+                        <li>Pour être éligible à un prêt, le client doit désormais maintenir un niveau minimum d'activité sur son compte MTN MoMo.</li>
+                        <li>L'évaluation prend notamment en compte l'activité transactionnelle globale des 30 derniers jours.</li>
+                        <li>En cas de non-éligibilité liée à ce critère, le motif de refus affiché est : « Le client a eu des activités Mobile Money inconsistantes au cours des 30 derniers jours. »</li>
+                    </ul>
+                </div>
+
+                <h4>Que conseiller au client ?</h4>
+                <ul>
+                    <li>L'inviter à utiliser régulièrement son compte MTN MoMo.</li>
+                    <li>L'encourager à maintenir une activité transactionnelle régulière dans le temps.</li>
+                    <li>Lorsque cela correspond à ses besoins, lui rappeler qu'il peut utiliser différents services MoMo : dépôts, retraits, transferts, paiements de factures et paiements marchands.</li>
+                    <li>Préciser que l'éligibilité au prêt est réévaluée régulièrement et peut évoluer selon l'activité du compte et les autres critères d'éligibilité.</li>
+                </ul>
+
+                <div class="script">
+                    <div class="script-label">Réponse simple à donner au client</div>
+                    <div class="script-text">
+                        « Votre activité récente sur votre compte ne répond pas actuellement aux
+                        conditions requises pour l'octroi d'un prêt. Nous vous encourageons à
+                        continuer à utiliser activement votre compte MTN MoMo et à maintenir une
+                        activité régulière. Votre éligibilité pourra être réévaluée ultérieurement,
+                        et vous pourrez alors soumettre une nouvelle demande. »
+                    </div>
+                </div>
+
+                <div class="box success">
+                    <strong>✅ À retenir</strong><br>
+                    Un refus lié à ce motif ne signifie pas nécessairement une inéligibilité
+                    définitive. L'éligibilité peut évoluer avec l'activité du compte et les
+                    autres critères applicables.
+                </div>
+
+            </div>
+
+            <div class="procedure">
+
+                <h3>Règle complémentaire sur l'éligibilité à l'emprunt</h3>
+
+                <ul>
+                    <li>Un abonné peut avoir plusieurs numéros à son nom, mais un seul de ses numéros peut être éligible à l'emprunt MoMoKash.</li>
+                    <li>Si l'abonné effectue un emprunt sur deux numéros différents enregistrés en son nom, il perd son éligibilité sur l'un des deux numéros.</li>
+                    <li><strong>À retenir :</strong> un seul numéro au nom de l'abonné doit être utilisé pour l'emprunt MoMoKash.</li>
+                </ul>
+
+                <div class="box warning">
+                    <strong>⏱ Délais de traitement des plaintes (SLA)</strong><br>
+                    En semaine : 24 heures &nbsp;·&nbsp; Le week-end : 72 heures.
+                </div>
+
+            </div>
+
+            <div class="procedure">
+
+                <h3>Cashback ciblé sur les forfaits</h3>
+
+                <div class="box tool">
+                    Il s'agit d'une <strong>campagne ciblée</strong> : seuls les abonnés ayant
+                    reçu le SMS de campagne peuvent en bénéficier.
+                </div>
+
+                <ul>
+                    <li>Le cashback correspond à 10 % du montant du forfait, dans la limite de 100 FCFA (plafonné dès qu'un forfait dépasse 1 000 FCFA).</li>
+                    <li>Aucun code n'est nécessaire pour vérifier le cashback : il s'agit d'un remboursement direct.</li>
+                    <li>Pour les abonnés éligibles, l'argent est directement reversé et un message / une notification est reçu juste après l'activation du forfait via MoMo.</li>
+                </ul>
+
+            </div>
+
+        </section>
+
+
+        <!-- MOBILE MONEY -->
+
+        <section id="mobile-money" class="section">
+
+            <div class="section-header">
+                <span>💳</span>
+                <h2>Mobile Money &amp; moyens de paiement</h2>
+            </div>
+
+            <p class="section-intro">
+                MoMo Express, épargne MoMoSayaa, relevés de transactions et transferts régionaux.
+            </p>
+
+            <div class="procedure">
+                <h3>MoMo Express (Push &amp; Pull) — banque ↔ MoMo</h3>
+                <p>Service établi en partenariat avec les banques du Bénin, permettant de transférer de l'argent d'un compte bancaire vers un compte MoMo et inversement.</p>
+
+                <h4>Avantages</h4>
+                <ul>
+                    <li>Rapide et sécurisé, coût raisonnable des frais liés aux transactions</li>
+                    <li>Fin des files d'attente lors des retraits d'argent à la banque</li>
+                    <li>Plus besoin de se déplacer vers les agences ou guichets automatiques</li>
+                    <li>Transactions effectuées depuis chez soi, sans risque d'insécurité</li>
+                </ul>
+
+                <h4>Éligibilité &amp; souscription</h4>
+                <p>Tous les clients MTN MoMo détenteurs d'un compte bancaire sont éligibles, sous réserve d'une demande de liaison auprès de leur banque. Le service s'active en agence bancaire (formulaire de liaison de compte à remplir et signer) ; la banque établit ensuite la liaison. Code utile : UBA — <span class="ussd">*880*70*1#</span> (les codes des autres banques sont en cours de développement).</p>
+
+                <h4>Utilisation</h4>
+                <p>Composer <span class="ussd">*880#</span> puis <strong>7 — Services Bancaires</strong>, puis choisir la banque (NSIA, UBA, Ecobank, BOA, La Poste, BGFI, Coris Bank, Orabank, CCEI, Banque Atlantique, BIIC, PADME...). Opérations possibles : transfert MoMo → Banque, et transfert Banque → MoMo. La souscription est gratuite ; des frais s'appliquent lors des transferts entre comptes.</p>
+            </div>
+
+            <div class="procedure">
+                <h3>MoMoSayaa — épargne via MTN MoMo (partenariat UBA)</h3>
+                <p>Solution d'épargne permettant aux abonnés MTN d'épargner directement depuis leur compte Mobile Money tout en bénéficiant d'intérêts en fin de mois.</p>
+
+                <div class="box success">
+                    <strong>Caractéristiques</strong><br>
+                    Intérêt mensuel de 0,3 % sur les montants conservés pendant au moins 30 jours.
+                    Solde minimum requis pour bénéficier des intérêts : 1 000 FCFA maintenu un mois
+                    sans retrait. Retrait possible à tout moment (total ou partiel).
+                </div>
+
+                <h4>Conditions d'accès</h4>
+                <ul>
+                    <li>Disposer d'un compte MTN Mobile Money actif avec un KYC complet</li>
+                    <li>Accepter les conditions générales disponibles sur ubabenin.com/momo-save/</li>
+                </ul>
+
+                <h4>Opérations — code <span class="ussd">*880*51#</span></h4>
+                <ul>
+                    <li><strong>Ouvrir un compte :</strong> option 1, puis accepter les CGU (1 puis 2 pour confirmer)</li>
+                    <li><strong>Déposer de l'argent :</strong> option 1, puis suivre les instructions</li>
+                    <li><strong>Retirer de l'argent :</strong> option 2, puis suivre les instructions</li>
+                    <li><strong>Consulter le solde :</strong> option 3</li>
+                </ul>
+            </div>
+
+            <div class="procedure">
+                <h3>Vérification des transactions Mobile Money</h3>
+                <p>L'historique des transactions Mobile Money (jusqu'à un an) est consultable via la plateforme <strong>releves-momo.mtn.bj/login-customers</strong>. Lors de la première utilisation, le client doit s'inscrire puis suivre les instructions.</p>
+                <ul>
+                    <li>Compte marchand → choisir l'option <strong>POS</strong></li>
+                    <li>Compte standard → renseigner simplement le numéro MTN</li>
+                    <li>Génération du relevé : définir la période puis cliquer sur « Générer Rapport » ; le PDF est envoyé par e-mail</li>
+                </ul>
+                <div class="box info">Alternative USSD : composer <span class="ussd">*880*10#</span> (inscription requise lors de la première utilisation).</div>
+            </div>
+
+            <div class="procedure">
+                <h3>Transfert régional (UEMOA &amp; zone CEDEAO)</h3>
+                <p>Composer <span class="ussd">*880#</span> → <strong>1</strong> (Transfert d'argent) → <strong>3</strong> (Transfert Régional).</p>
+
+                <h4>1. Vers Mobile Money</h4>
+                <p>Côte d'Ivoire, Niger, Togo, Burkina Faso, Guinée-Bissau, Sénégal, Mali, Ghana, Liberia.</p>
+
+                <h4>2. Vers Banques</h4>
+                <p>Nigeria, Ghana.</p>
+
+                <div class="box tool">
+                    <strong>Destinations directes citées :</strong> Côte d'Ivoire → MTN CI · Niger → Airtel Niger, Moov Niger, Zamanitel Niger · Togo → Flooz Togo · Burkina Faso → Orange Burkina · Guinée-Bissau → MTN Bissau.
+                </div>
+            </div>
+
+            <div class="procedure">
+                <h3>WorldRemit — recevoir de l'argent depuis l'étranger</h3>
+                <p>Le correspondant à l'étranger visite le site WorldRemit ou télécharge l'application, crée un compte, choisit le Bénin, sélectionne MTN Mobile Money, saisit le montant et les coordonnées du bénéficiaire, puis effectue le paiement.</p>
+                <p>Vérification du solde : <span class="ussd">*880#</span> puis <strong>4</strong>. Pays d'envoi disponibles : Australie, Autriche, Belgique, Brésil, Cameroun, Canada, Chypre, Danemark, France, Allemagne, Italie, Japon, Royaume-Uni, États-Unis, etc.</p>
+            </div>
+
+            <div class="procedure">
+                <h3>TerraPay — réception internationale multi-partenaires</h3>
+                <p>Permet de recevoir de l'argent directement sur le compte MTN MoMo via plusieurs partenaires internationaux : Western Union, Wave US, AYO Remit, Crosspay Ltd, LycaRemit, SimbaPay, Nobel Financial, etc.</p>
+                <p>Vérification du solde : <span class="ussd">*880#</span> puis <strong>4</strong>. Assistance : <strong>111</strong> ou WhatsApp <strong>0161 00 00 00</strong>.</p>
+            </div>
+
+        </section>
+
+
+        <!-- TERMINAUX -->
+
+        <section id="terminaux" class="section">
+
+            <div class="section-header">
+                <span>📱</span>
+                <h2>Terminaux, Kpede Kpede &amp; Device Financing</h2>
+            </div>
+
+            <p class="section-intro">
+                Procédures de déblocage, paiement et financement des terminaux.
+            </p>
+
+            <div class="procedure">
+
+                <h3>Déblocage Kpede Kpede</h3>
+
+                <p>
+                    Pour les cas de Kpede Kpede payés en cash et les cas de téléphones bloqués
+                    pour non-paiement : loguer les plaintes dans <strong>DCLM</strong> et
+                    <strong>Yellochat</strong> en inscrivant l'<strong>IMEI 1</strong> du
+                    téléphone, au lieu de rediriger les clients en agence.
+                </p>
+
+                <div class="box warning">
+                    <strong>Cas particulier — paiement non défalqué</strong><br>
+                    Pour les clients qui ont de l'argent sur leur compte MoMo et que le système
+                    ne défalque pas : demander au client de cliquer sur « Frais USSD », puis de
+                    composer <span class="ussd">*171#</span> pour effectuer le paiement manuel.
+                    Ensuite, lui demander de se connecter à un réseau Wi-Fi : le téléphone doit se
+                    débloquer de lui-même. Si le téléphone ne se débloque toujours pas, loguer la
+                    plainte par les canaux dédiés en inscrivant l'IMEI 1.
+                </div>
+
+            </div>
+
+            <div class="procedure">
+
+                <h3>Device Financing — A36, A56 &amp; V80</h3>
+
+                <ul>
+                    <li>ZTE A36 64 Go + 4 Go — 1 000 pièces au premier lancement</li>
+                    <li>ZTE A56 128 Go + 4 Go — 1 000 pièces au premier lancement</li>
+                    <li>ZTE V80 256 Go + 8 Go — 3 000 pièces au premier lancement</li>
+                </ul>
+
+                <h4>Nouvelles fonctionnalités</h4>
+                <ul>
+                    <li>Achat pour une autre personne : le client supporte la charge fixe journalière et décide du numéro bénéficiaire de la Data.</li>
+                    <li>Achat de deux téléphones (deux A36, deux A56, ou un A36 + un A56) : le client supporte le premier dépôt et la charge fixe journalière des deux téléphones.</li>
+                    <li>Achat de deux téléphones avec attribution de Data à des numéros différents.</li>
+                    <li>Nouvel achat après un premier, automatiquement si le client est toujours éligible.</li>
+                    <li>Contrôle de conformité IMEI / modèle : le système bloque l'opération si l'IMEI sélectionné ne correspond pas au modèle choisi.</li>
+                    <li>Gestion automatique des commissions, calculées et déduites à chaque vente.</li>
+                    <li>Blocage automatique en cas d'impayé (sur les deux téléphones), suivi des paiements par l'agent, et déblocage dès régularisation.</li>
+                </ul>
+
+                <div class="table-wrap">
+                    <table>
+                        <tr>
+                            <th>Modèle</th><th>Stockage</th><th>Paiement cash</th><th>Avance</th>
+                            <th>Durée</th><th>Paiement quotidien</th><th>Total acheteur</th>
+                        </tr>
+                        <tr><td>A36</td><td>64 Go + 4 Go</td><td>40 000 XOF</td><td>10 000 XOF</td><td>100 jours</td><td>400 XOF/jour</td><td>50 000 XOF</td></tr>
+                        <tr><td>A56</td><td>128 Go + 4 Go</td><td>50 000 XOF</td><td>15 000 XOF</td><td>100 jours</td><td>500 XOF/jour</td><td>65 000 XOF</td></tr>
+                        <tr><td>V80</td><td>256 Go + 8 Go</td><td>125 000 XOF</td><td>25 000 XOF</td><td>100 jours</td><td>1 000 XOF/jour</td><td>125 000 XOF</td></tr>
+                    </table>
+                </div>
+
+            </div>
+
+            <div class="procedure">
+
+                <h3>ZTE V80 Max — conditions Kpede Kpede</h3>
+
+                <ul>
+                    <li>RAM : 8 Go, extensible à 20 Go</li>
+                    <li>ROM : 256 Go</li>
+                    <li>Batterie : 6 000 mAh</li>
+                    <li>Photo avant : 16 MP · Photo arrière : 50 MP</li>
+                    <li>Prix en cash : 100 000 FCFA</li>
+                    <li>Prix en Kpede Kpede : 125 000 FCFA — dépôt initial 25 000 FCFA, puis 1 000 FCFA/jour pendant 100 jours</li>
+                    <li>Bonus : 1 Go chaque jour, non cumulable</li>
+                </ul>
+
+            </div>
+
+        </section>
+
+
+        <!-- ROAMING -->
+
+        <section id="roaming" class="section">
+
+            <div class="section-header">
+                <span>🌍</span>
+                <h2>Roaming &amp; international</h2>
+            </div>
+
+            <p class="section-intro">
+                Diagnostic de premier niveau, tarification par pays et grilles Free Roaming ECOWAS.
+            </p>
+
+            <div class="procedure">
+
+                <h3>Roaming aux USA — diagnostic de premier niveau</h3>
+
+                <div class="box warning">
+                    L'augmentation des cas d'échec de service en roaming aux USA est notamment
+                    liée à l'arrêt progressif des réseaux 2G/3G des opérateurs partenaires
+                    (AT&amp;T, T-Mobile, Verizon), rendant nécessaire l'utilisation de la
+                    technologie VoLTE pour les services Voix et SMS.
+                </div>
+
+                <h4>Prérequis à vérifier avec l'abonné</h4>
+                <ul>
+                    <li>Services Roaming et 4G Roaming activés sur la ligne</li>
+                    <li>Données en itinérance (Data Roaming) activées sur le téléphone</li>
+                    <li>Données mobiles activées sur le téléphone</li>
+                    <li>Téléphone configuré sur le mode 4G/LTE</li>
+                    <li>Solde suffisant</li>
+                    <li>Téléphone compatible VoLTE, avec la fonction VoLTE activée</li>
+                    <li>Configuration APN : Nom <strong>MTN</strong> ; APN <strong>internet.mtn.bj</strong></li>
+                </ul>
+
+                <h4>Après les vérifications</h4>
+                <div class="step"><div class="step-number">1</div><div>Inviter l'abonné à effectuer une recherche manuelle des réseaux disponibles.</div></div>
+                <div class="step"><div class="step-number">2</div><div>Lui demander de sélectionner <strong>T-Mobile</strong>.</div></div>
+                <div class="step"><div class="step-number">3</div><div>Si le problème persiste, remonter le cas à l'équipe CEM, habilitée aux investigations complémentaires.</div></div>
+
+            </div>
+
+            <div class="procedure">
+                <h3>Facturation Roaming en Inde</h3>
+                <div class="table-wrap">
+                    <table>
+                        <tr><th>Opérateur</th><th>Appel en Inde</th><th>Vers Bénin</th><th>Vers autre destination</th><th>Appel reçu</th><th>Data</th></tr>
+                        <tr><td>Reliance Telecom Private Ltd.</td><td>350 F/min</td><td>500 F/min</td><td>1 000 F/min</td><td>1 720 F/min</td><td>20 F/Mo</td></tr>
+                        <tr><td>Multiple Operators Bharti</td><td>100 F/min</td><td>500 F/min</td><td>800 F/min</td><td>350 F/min</td><td>30 F/Mo</td></tr>
+                        <tr><td>Vodafone Tamil Nadu</td><td>1 621,61 F/min</td><td>4 302,68 F/min</td><td>4 302,68 F/min</td><td>1 720 F/min</td><td>13 284,25 F/Mo</td></tr>
+                        <tr><td>Vodafone Fascel</td><td>1 059,45 F/min</td><td>2 140,53 F/min</td><td>2 140,53 F/min</td><td>1 621,61 F/min</td><td>11 070,21 F/Mo</td></tr>
+                        <tr><td>Other</td><td>1 125 F/min</td><td>4 565 F/min</td><td>3 100 F/min</td><td>1 720 F/min</td><td>14 085 F/Mo</td></tr>
+                    </table>
+                </div>
+                <div class="box info">Appels facturés par intervalles de 30 secondes. Data facturée selon les paliers indiqués pour chaque opérateur (70 KiB ou 30 KiB selon l'opérateur).</div>
+            </div>
+
+            <div class="procedure">
+                <h3>Tarif international &amp; Free Roaming</h3>
+                <ul>
+                    <li>Depuis le <strong>19 février 2026</strong>, le roaming est activé par défaut pour tous les abonnés : voix et SMS automatiquement disponibles. L'accès aux services data reste soumis à autorisation préalable via <span class="ussd">*178#</span> (Option 1).</li>
+                    <li>Depuis le <strong>25 avril 2026</strong>, les appels internationaux sont inclus dans les offres Maxi Appel et Maxi Appel Internet.</li>
+                    <li>Les tarifs internationaux ont été revus afin de proposer des conditions plus avantageuses — détail dans le document « New International tariff in Maxi 2026 ».</li>
+                    <li>Des accords <strong>Free Roaming</strong> existent avec le Togo, le Ghana et le Sénégal : 30 jours de réception d'appels gratuite lors des déplacements dans ces pays.</li>
+                </ul>
+            </div>
+
+            <div class="procedure">
+                <h3>Grille tarifaire ECOWAS — Ghana, Sénégal &amp; Togo</h3>
+                <p>Tarifs facturés à l'utilisateur final (FCFA/XOF) — appels &amp; SMS.</p>
+                <div class="table-wrap">
+                    <table>
+                        <tr><th>Pays</th><th>Opérateur</th><th>On-net</th><th>Off-net</th><th>Vers Bénin</th><th>International</th><th>SMS On-net</th><th>SMS Off-net</th><th>SMS origine</th><th>SMS intl.</th></tr>
+                        <tr><td>Ghana</td><td>MTN Ghana</td><td>6,22</td><td>6,22</td><td>218</td><td>252</td><td>38</td><td>38</td><td>38</td><td>38</td></tr>
+                        <tr><td>Ghana</td><td>Telecel Ghana</td><td>6,22</td><td>6,22</td><td>218</td><td>252</td><td>38</td><td>38</td><td>38</td><td>38</td></tr>
+                        <tr><td>Sénégal</td><td>Orange</td><td>62</td><td>62</td><td>130</td><td>400</td><td>75</td><td>75</td><td>75</td><td>75</td></tr>
+                        <tr><td>Sénégal</td><td>Expresso</td><td>62</td><td>62</td><td>130</td><td>400</td><td>75</td><td>75</td><td>75</td><td>75</td></tr>
+                        <tr><td>Sénégal</td><td>Free_Tigo</td><td>62</td><td>62</td><td>130</td><td>400</td><td>75</td><td>75</td><td>75</td><td>75</td></tr>
+                        <tr><td>Togo</td><td>Moov Togo</td><td>79</td><td>79</td><td>90</td><td>90</td><td>70</td><td>70</td><td>70</td><td>70</td></tr>
+                        <tr><td>Togo</td><td>YAS Togo (ex Togocom)</td><td>79</td><td>79</td><td>90</td><td>90</td><td>70</td><td>70</td><td>70</td><td>70</td></tr>
+                    </table>
+                </div>
+
+                <p class="table-title">Appels entrants &amp; data</p>
+                <div class="table-wrap">
+                    <table>
+                        <tr><th>Pays</th><th>Opérateur</th><th>Entrants J1–30</th><th>Entrants après 30j</th><th>Tarif / Mo</th><th>Palier data</th></tr>
+                        <tr><td>Ghana</td><td>MTN Ghana</td><td>Gratuit</td><td>225</td><td>1,1</td><td>30 KB</td></tr>
+                        <tr><td>Ghana</td><td>Telecel Ghana</td><td>Gratuit</td><td>225</td><td>1,1</td><td>30 KB</td></tr>
+                        <tr><td>Sénégal</td><td>Orange</td><td>Gratuit</td><td>225</td><td>2</td><td>1 KB</td></tr>
+                        <tr><td>Sénégal</td><td>Expresso</td><td>Gratuit</td><td>225</td><td>2</td><td>1 KB</td></tr>
+                        <tr><td>Sénégal</td><td>Free_Tigo</td><td>Gratuit</td><td>225</td><td>2</td><td>1 KB</td></tr>
+                        <tr><td>Togo</td><td>Moov Togo</td><td>Gratuit</td><td>225</td><td>2,22</td><td>1 KB</td></tr>
+                        <tr><td>Togo</td><td>YAS Togo (ex Togocom)</td><td>Gratuit</td><td>225</td><td>2,22</td><td>1 KB</td></tr>
+                    </table>
+                </div>
+                <div class="box info">« Gratuit » signifie que la réception d'appels est gratuite pendant les 30 premiers jours. Après 30 jours, le tarif entrant indiqué s'applique.</div>
+            </div>
+
+            <div class="procedure">
+                <h3>Tarification Côte d'Ivoire &amp; Nigeria</h3>
+                <p>Un accord de Free Roaming a été signé avec le Togo, le Ghana et le Sénégal (30 jours de réception d'appels gratuite, puis tarifs réglementés par les autorités de régulation).</p>
+                <ul>
+                    <li><strong>Côte d'Ivoire :</strong> les conditions de réception gratuite précédemment appliquées ont été modifiées. Réception d'un appel depuis un numéro MTN Bénin : 2,5 FCFA/seconde ; depuis un autre réseau : 5,833 FCFA/seconde.</li>
+                    <li><strong>Nigeria :</strong> la réception d'appels sur le réseau MTN Nigeria est désormais facturée 3,75 FCFA/seconde.</li>
+                </ul>
+            </div>
+
+        </section>
+
+
+        <!-- VOLTE -->
+
+        <section id="volte" class="section">
+
+            <div class="section-header">
+                <span>📞</span>
+                <h2>Guide VoLTE par marque de téléphone</h2>
+            </div>
+
+            <p class="section-intro">
+                Orienter rapidement un abonné souhaitant activer le VoLTE (Voice over LTE) pour
+                bénéficier d'une meilleure qualité d'appel.
+            </p>
+
+            <div class="box tool">
+                <strong>Repère général :</strong> les libellés exacts des menus varient selon la
+                version du système, mais la logique générale reste : <em>Paramètres → réseau
+                mobile / SIM → VoLTE</em>.
+            </div>
+
+            <div class="box success">
+                <strong>Bénéfices MTN VoLTE :</strong> qualité de voix HD, connexion aux appels
+                plus rapide, possibilité d'utiliser Internet 4G pendant l'appel (selon l'appareil
+                et la couverture réseau), conversations plus fluides.
+            </div>
+
+            <div class="procedure">
+                <h3>Motorola / Sony</h3>
+                <p><em>Paramètres → Réseau et Internet → activer « Appels 4G LTE (VoLTE) »</em></p>
+                <p>Modèles cités : Motorola Moto G, Edge, Razr, One ; Sony Xperia 1, 5, 10, XA, XZ.</p>
+            </div>
+
+            <div class="procedure">
+                <h3>Nokia / HMD</h3>
+                <p><em>Paramètres → Réseau mobile → activer « Appels 4G LTE (VoLTE) »</em></p>
+                <p>Modèles cités : Nokia G, X, C, XR ; HMD Pulse, HMD Aura.</p>
+            </div>
+
+            <div class="box warning">
+                La procédure Huawei n'était pas renseignée dans le document source reçu —
+                à compléter dès disponibilité.
+            </div>
+
+        </section>
+
+
+        <!-- FORFAITS INTERNET -->
+
+        <section id="forfaits" class="section">
+
+            <div class="section-header">
+                <span>🌐</span>
+                <h2>Forfaits internet</h2>
+            </div>
+
+            <div class="procedure">
+                <h3>Activation des forfaits internet</h3>
+
+                <h4>Via le compte principal</h4>
+                <p>Composer <span class="ussd">*123#</span> → 2 « Tous les forfaits » → choisir le forfait, puis suivre les instructions.</p>
+
+                <h4>Via Mobile Money</h4>
+                <p>Composer <span class="ussd">*880#</span> → 3 « Crédits / Forfaits » → 2 « Achat de forfait MTN » → 1 « Internet », puis suivre les instructions.</p>
+
+                <h4>Via MyMTN</h4>
+                <p>Télécharger l'application (Play Store / App Store), se connecter avec le numéro et un mot de passe à 4 chiffres, puis Forfaits → onglet Internet → Acheter.</p>
+
+                <h4>Via l'App MoMo</h4>
+                <p>Télécharger l'application, se connecter (numéro + code PIN MoMo à 5 chiffres + OTP à 4 chiffres), puis Acheter → Forfaits → « Moi » (auto-activation) ou « Quelqu'un d'autre » (envoi) → Internet.</p>
+            </div>
+
+            <div class="procedure">
+                <h3>Grille tarifaire</h3>
+
+                <p class="table-title">Forfaits journaliers</p>
+                <div class="table-wrap"><table>
+                    <tr><th>Prix</th><th>Volume</th><th>Validité</th></tr>
+                    <tr><td>100 F</td><td>238 Mo</td><td>24H</td></tr>
+                    <tr><td>200 F</td><td>476 Mo</td><td>24H</td></tr>
+                </table></div>
+
+                <p class="table-title">Forfaits hebdomadaires</p>
+                <div class="table-wrap"><table>
+                    <tr><th>Prix</th><th>Volume</th><th>Validité</th></tr>
+                    <tr><td>500 F</td><td>1,16 Go</td><td>3 jours</td></tr>
+                    <tr><td>1 000 F</td><td>2,3 Go</td><td>7 jours</td></tr>
+                </table></div>
+
+                <p class="table-title">Forfait 15 jours</p>
+                <div class="table-wrap"><table>
+                    <tr><th>Prix</th><th>Volume</th><th>Validité</th></tr>
+                    <tr><td>2 500 F</td><td>5,8 Go</td><td>15 jours</td></tr>
+                </table></div>
+
+                <p class="table-title">Forfaits illimités ordinaires (30 jours — vitesse réduite à 1 Mbps au-delà)</p>
+                <div class="table-wrap"><table>
+                    <tr><th>Prix</th><th>Volume</th></tr>
+                    <tr><td>5 000 F</td><td>11,6 Go Plus</td></tr>
+                    <tr><td>10 000 F</td><td>23,25 Go Plus</td></tr>
+                    <tr><td>15 000 F</td><td>34,87 Go Plus</td></tr>
+                    <tr><td>20 000 F</td><td>46,5 Go Plus</td></tr>
+                    <tr><td>25 000 F</td><td>58,1 Go Plus</td></tr>
+                </table></div>
+            </div>
+
+            <div class="procedure">
+                <h3>Option Extension</h3>
+                <p>Permet d'activer à l'avance un nouveau forfait internet, même si un forfait est déjà en cours. Le nouveau forfait prend automatiquement effet à l'expiration du forfait actif — ou le client peut désactiver le forfait en cours pour activer immédiatement le nouveau.</p>
+                <p><strong>Activation :</strong> <span class="ussd">*123#</span> → 2 « Tous les forfaits » → 2 « Forfaits illimités » → 2 « Faire une extension ».<br>
+                <strong>Désactivation :</strong> composer <span class="ussd">*123*7#</span> puis lancer l'appel.</p>
+            </div>
+
+            <div class="procedure">
+                <h3>Forfait Internet KDO (offrir un forfait)</h3>
+                <p>Via USSD : <span class="ussd">*123#</span> → 3 → 1, puis suivre les instructions. Également possible via MyMTN ou l'App MoMo.</p>
+                <div class="box info">
+                    La validité du forfait offert correspond à celle du forfait choisi (ex. un
+                    forfait 40 Mo offert garde la validité du forfait 40 Mo). L'activation d'un
+                    code de transfert et les transferts sont gratuits. Le donateur doit disposer
+                    d'un montant équivalent ; le correspondant ne doit pas avoir de forfait en
+                    cours ; le transfert ne se fait que vers des numéros MTN. Seul celui qui offre
+                    le forfait est prélevé — le bénéficiaire ne paie aucun frais.
+                </div>
+            </div>
+
+        </section>
+
+
+        <!-- SERVICES & OFFRES MTN -->
+
+        <section id="services" class="section">
+
+            <div class="section-header">
+                <span>🛠</span>
+                <h2>Services &amp; offres MTN</h2>
+            </div>
+
+            <p class="section-intro">
+                Compilation des services MTN — cliquer sur un service pour dérouler la fiche.
+            </p>
+
+            <div class="faq">
+                <div class="faq-question" onclick="toggleFAQ(this)">MTN ME2U — transfert de crédit <span class="ussd">*102#</span></div>
+                <div class="faq-answer">
+                    <p>Permet de transférer du crédit d'appel à ses proches. Avant utilisation, l'abonné doit définir son code secret de transfert (par défaut : <strong>0000</strong>).</p>
+                    <ul>
+                        <li>Définir le code : <span class="ussd">*102*0000*NOUVEAU CODE#</span> ou composer *102# et suivre les instructions</li>
+                        <li>Transférer : <span class="ussd">*102*Montant*Numéro du réceptionnaire*Code#</span> ou composer *102# et suivre les instructions</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="faq">
+                <div class="faq-question" onclick="toggleFAQ(this)">MTN Yellow Game <span class="ussd">*709#</span></div>
+                <div class="faq-answer">
+                    <p>Plateforme de jeux offrant aux abonnés l'accès à une multitude de jeux jouables sur téléphone. Activation : composer *709#.</p>
+                </div>
+            </div>
+
+            <div class="faq">
+                <div class="faq-question" onclick="toggleFAQ(this)">MTN CANAL+ <span class="ussd">*750*20#</span></div>
+                <div class="faq-answer">
+                    <p>Accès à tous les bouquets Canal+ à tarif réduit via activation USSD, avec ou sans décodeur / abonnement résidentiel. Bouquets : Access, Evasion, Access+, Evasion+, Tout Canal+.</p>
+                    <ul>
+                        <li>Composer *750*20#, choisir son bouquet, puis activer via le code principal ou le code MoMo</li>
+                        <li>Un SMS de confirmation envoie un lien d'accès et le code de réabonnement virtuel</li>
+                        <li>Sur le lien : connexion directe si un compte existe déjà, sinon création de compte (numéro d'activation + mot de passe + code de réabonnement virtuel)</li>
+                    </ul>
+                    <p>Après expiration de la souscription, le visionnage continue via forfait internet ou Wi-Fi. Fonctionne sur téléphone, tablette, ordinateur et Smart TV, même sans décodeur Canal+ à domicile.</p>
+                </div>
+            </div>
+
+            <div class="faq">
+                <div class="faq-question" onclick="toggleFAQ(this)">Conférence d'appel</div>
+                <div class="faq-answer">
+                    <p>Permet de communiquer avec plusieurs personnes au cours d'un seul appel (réunions professionnelles, discussions de groupe, sorties entre amis).</p>
+                    <ul>
+                        <li>Le client A active « Appel en attente », appelle le client B, puis lance un nouvel appel vers le client C</li>
+                        <li>Il sélectionne ensuite « Conférence » dans les options — jusqu'à 4 participants supplémentaires</li>
+                    </ul>
+                    <p>Aucun frais d'abonnement : le client paie simplement le coût normal des appels.</p>
+                </div>
+            </div>
+
+            <div class="faq">
+                <div class="faq-question" onclick="toggleFAQ(this)">MTN Info Fun <span class="ussd">*703#</span></div>
+                <div class="faq-answer">
+                    <p>Service RMS donnant accès à des informations vidéo (Flash Foot, Flash Infos, Star Actu, Vie Chrétienne) sans utiliser de forfait internet.</p>
+                    <p><strong>Formules (identiques pour chaque rubrique) :</strong> 50F/24H · 20F/jour pendant 7 jours · 15F/jour pendant 30 jours.</p>
+                    <p><strong>Désactivation :</strong> Flash Foot *703*1# · Flash Infos *703*2# · Star Actu *703*3# · Vie Chrétienne *703*4#.</p>
+                    <p>Le menu « Statut » vérifie l'abonnement, « Info » liste les contenus, « Désactivation » arrête le service. Ne fonctionne pas sous Wi-Fi.</p>
+                </div>
+            </div>
+
+            <div class="faq">
+                <div class="faq-question" onclick="toggleFAQ(this)">MTN Xtratime <span class="ussd">*785#</span></div>
+                <div class="faq-answer">
+                    <p>Permet d'emprunter du crédit et de le rembourser plus tard, avec un taux de remboursement de 10 %.</p>
+                    <ul>
+                        <li>Montants disponibles : 50 FCFA à 4 000 FCFA selon la consommation de l'abonné</li>
+                        <li>Éligibilité : être abonné MTN depuis au moins 3 mois</li>
+                        <li>Activation : composer *785#</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="faq">
+                <div class="faq-question" onclick="toggleFAQ(this)">MTN English Class</div>
+                <div class="faq-answer">
+                    <p>Service permettant de suivre des cours d'anglais sur téléphone. Activation : appeler le <strong>7208</strong> ou composer <span class="ussd">*720#</span>.</p>
+                </div>
+            </div>
+
+            <div class="faq">
+                <div class="faq-question" onclick="toggleFAQ(this)">MTN eSIM</div>
+                <div class="faq-answer">
+                    <p>Puce électronique intégrée directement dans l'appareil, sans carte SIM physique. Vérification de compatibilité : composer <span class="ussd">*103*2#</span>.</p>
+                </div>
+            </div>
+
+            <div class="faq">
+                <div class="faq-question" onclick="toggleFAQ(this)">MTN TV <span class="ussd">*750*50#</span></div>
+                <div class="faq-answer">
+                    <p>Application de streaming vidéo MTN : chaînes nationales, films, séries, dessins animés, documentaires.</p>
+                    <div class="table-wrap"><table>
+                        <tr><th>Durée</th><th>Prix</th><th>Validité</th></tr>
+                        <tr><td>1H</td><td>50F</td><td>24H</td></tr>
+                        <tr><td>1H30</td><td>70F</td><td>24H</td></tr>
+                        <tr><td>3H</td><td>100F</td><td>24H</td></tr>
+                        <tr><td>14H</td><td>350F</td><td>7 jours</td></tr>
+                        <tr><td>75H</td><td>1 000F</td><td>30 jours</td></tr>
+                    </table></div>
+                </div>
+            </div>
+
+            <div class="faq">
+                <div class="faq-question" onclick="toggleFAQ(this)">MTN Control / MTN Fleet</div>
+                <div class="faq-answer">
+                    <p>Solution digitale de sécurité et de gestion de flotte, pour entreprises, ONG, institutions, PME et multinationales.</p>
+                    <p><strong>Fonctionnalités :</strong> tracking GPS, limitation de vitesse, géorepérage, immobilisation à distance, gestion carburant, analyse conducteur.</p>
+                    <p><strong>Tarification — Option Leasing :</strong> Tracking basique 14 900F/mois · Fuel Monitoring 33 900F à 35 900F/mois · Driver Awareness 19 500F à 47 500F/mois.<br>
+                    <strong>Option Achat :</strong> boîtier + installation + abonnement dès 7 900F/mois.</p>
+                </div>
+            </div>
+
+            <div class="faq">
+                <div class="faq-question" onclick="toggleFAQ(this)">MTN Flexi (Corporate / Lite / Compact)</div>
+                <div class="faq-answer">
+                    <p>Offres permettant de communiquer librement entre membres d'une même entreprise.</p>
+                    <p><strong>Documents à fournir :</strong> RCCM ou IFU, pièce d'identité biométrique, bon de commande signée, numéro de téléphone. Code admin : <span class="ussd">*159#</span> (activation, désactivation, ajout/suppression, renouvellement).</p>
+                    <ul>
+                        <li><strong>Flexi Corporate :</strong> appels, SMS, data — forfaits 3 000F TTC ou 5 000F TTC</li>
+                        <li><strong>Flexi Lite :</strong> 1H d'appel/jour, 200 Mo, maximum 5 personnes</li>
+                        <li><strong>Flexi Compact :</strong> 1H d'appel/jour, 200 Mo, maximum 3 personnes</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="faq">
+                <div class="faq-question" onclick="toggleFAQ(this)">MTN Standard Pro</div>
+                <div class="faq-answer">
+                    <p>Service de messagerie vocale et interactive disponible 24h/24, avec interface sur <strong>standardpro.mtn.bj</strong>.</p>
+                    <p><strong>Avantages :</strong> gestion professionnelle des appels, enregistrement, filtrage automatique, gestion des plaintes.</p>
+                    <p><strong>Tarification :</strong> frais d'activation 5 000 FCFA · frais mensuels dès 15 000 FCFA.</p>
+                </div>
+            </div>
+
+            <div class="faq">
+                <div class="faq-question" onclick="toggleFAQ(this)">MTN Mobile Advertising</div>
+                <div class="faq-answer">
+                    <p>Solution publicitaire mobile pour entreprises : notifications fin d'appel, Balance Check Notification, Recharge Notification, PayMyCall, Me2U.</p>
+                    <p><strong>Avantages :</strong> large couverture, publicité non intrusive, rapports journaliers ou hebdomadaires, retour sur investissement élevé.</p>
+                </div>
+            </div>
+
+            <div class="faq">
+                <div class="faq-question" onclick="toggleFAQ(this)">SMS Banking</div>
+                <div class="faq-answer">
+                    <p>Permet aux banques d'envoyer des informations par SMS, et aux clients d'effectuer des requêtes sur leur compte.</p>
+                    <p><strong>Avantages :</strong> gestion bancaire permanente, suivi des opérations, coût limité au SMS.</p>
+                </div>
+            </div>
+
+            <div class="faq">
+                <div class="faq-question" onclick="toggleFAQ(this)">MTN Mail Services</div>
+                <div class="faq-answer">
+                    <p>Solution Cloud privé destinée aux grandes entreprises utilisant Outlook et Lotus Notes.</p>
+                    <p><strong>Avantages :</strong> disponibilité garantie, protection antivirus, continuité des activités, archivage des e-mails, sécurité renforcée — sans lourds investissements d'infrastructure.</p>
+                </div>
+            </div>
+
+        </section>
+
+
+        <!-- FRAIS DE TRANSFERT REGIONAL -->
+
+        <section id="frais-transfert" class="section">
+
+            <div class="section-header">
+                <span>🧾</span>
+                <h2>Frais de transfert régional (MoMo)</h2>
+            </div>
+
+            <p class="section-intro">Grilles tarifaires par opérateur partenaire de la sous-région.</p>
+
+            <div class="procedure">
+                <p class="table-title">Orange Burkina</p>
+                <div class="table-wrap"><table>
+                    <tr><th>Minimum</th><th>Maximum</th><th>Tarif</th></tr>
+                    <tr><td>500</td><td>5 000</td><td>100</td></tr>
+                    <tr><td>5 001</td><td>10 000</td><td>200</td></tr>
+                    <tr><td>10 001</td><td>25 000</td><td>350</td></tr>
+                    <tr><td>25 001</td><td>50 000</td><td>450</td></tr>
+                    <tr><td>50 001</td><td>100 000</td><td>750</td></tr>
+                    <tr><td>100 001</td><td>200 000</td><td>1 500</td></tr>
+                    <tr><td>200 001</td><td>300 000</td><td>3 000</td></tr>
+                    <tr><td>300 001</td><td>400 000</td><td>4 000</td></tr>
+                    <tr><td>400 001</td><td>500 000</td><td>5 000</td></tr>
+                </table></div>
+
+                <p class="table-title">Orange Niger</p>
+                <div class="table-wrap"><table>
+                    <tr><th>Minimum</th><th>Maximum</th><th>Tarif</th></tr>
+                    <tr><td>500</td><td>5 000</td><td>100</td></tr>
+                    <tr><td>5 001</td><td>10 000</td><td>200</td></tr>
+                    <tr><td>10 001</td><td>25 000</td><td>350</td></tr>
+                    <tr><td>25 001</td><td>50 000</td><td>450</td></tr>
+                    <tr><td>50 001</td><td>100 000</td><td>750</td></tr>
+                    <tr><td>100 001</td><td>200 000</td><td>1 500</td></tr>
+                    <tr><td>200 001</td><td>300 000</td><td>3 000</td></tr>
+                    <tr><td>300 001</td><td>400 000</td><td>4 000</td></tr>
+                    <tr><td>400 001</td><td>500 000</td><td>5 000</td></tr>
+                </table></div>
+
+                <p class="table-title">Flooz</p>
+                <div class="table-wrap"><table>
+                    <tr><th>Plage</th><th>Tarif</th></tr>
+                    <tr><td>5 – 5 000</td><td>200</td></tr>
+                    <tr><td>5 001 – 15 000</td><td>250</td></tr>
+                    <tr><td>15 001 – 50 000</td><td>500</td></tr>
+                    <tr><td>50 001 – 100 000</td><td>1 000</td></tr>
+                    <tr><td>100 001 – 200 000</td><td>1 500</td></tr>
+                    <tr><td>200 001 – 300 000</td><td>2 000</td></tr>
+                    <tr><td>300 001 – 500 000</td><td>2 500</td></tr>
+                    <tr><td>500 001 – 850 000</td><td>2 500</td></tr>
+                    <tr><td>850 001 – 1 000 000</td><td>3 000</td></tr>
+                    <tr><td>1 000 001 – 1 500 000</td><td>3 500</td></tr>
+                </table></div>
+
+                <p class="table-title">Côte d'Ivoire</p>
+                <div class="table-wrap"><table>
+                    <tr><th>Minimum</th><th>Maximum</th><th>Tarif</th></tr>
+                    <tr><td>1</td><td>5 000</td><td>100</td></tr>
+                    <tr><td>5 001</td><td>25 000</td><td>500</td></tr>
+                    <tr><td>25 001</td><td>50 000</td><td>1 000</td></tr>
+                    <tr><td>50 001</td><td>100 000</td><td>1 600</td></tr>
+                    <tr><td>100 001</td><td>200 000</td><td>2 600</td></tr>
+                    <tr><td>200 001</td><td>300 000</td><td>3 800</td></tr>
+                    <tr><td>300 001</td><td>600 000</td><td>6 000</td></tr>
+                    <tr><td>600 001</td><td>1 000 000</td><td>10 000</td></tr>
+                    <tr><td>1 000 001</td><td>1 500 000</td><td>15 000</td></tr>
+                </table></div>
+
+                <p class="table-title">Airtel Niger</p>
+                <div class="table-wrap"><table>
+                    <tr><th>Minimum</th><th>Maximum</th><th>Tarif</th></tr>
+                    <tr><td>100</td><td>50 000</td><td>1 000</td></tr>
+                    <tr><td>50 001</td><td>100 000</td><td>1 500</td></tr>
+                    <tr><td>100 001</td><td>200 000</td><td>2 000</td></tr>
+                    <tr><td>200 001</td><td>300 000</td><td>3 000</td></tr>
+                    <tr><td>300 001</td><td>500 000</td><td>4 000</td></tr>
+                </table></div>
+            </div>
+
+        </section>
+
+
+        <!-- FAQ -->
+
+        <section id="faq" class="section">
+
+            <div class="section-header">
+                <span>❓</span>
+                <h2>Questions fréquentes</h2>
+            </div>
+
+            <div class="faq">
+                <div class="faq-question" onclick="toggleFAQ(this)">Comment dois-je traiter une demande que je ne maîtrise pas ?</div>
+                <div class="faq-answer">
+                    <p>Vérifiez d'abord les procédures disponibles dans ce guide. Si la réponse
+                    n'est pas disponible ou si la situation nécessite une intervention
+                    particulière, appliquez la procédure d'escalade appropriée.</p>
+                </div>
+            </div>
+
+            <div class="faq">
+                <div class="faq-question" onclick="toggleFAQ(this)">Que faire si le client est mécontent ?</div>
+                <div class="faq-answer">
+                    <p>Écoutez le client sans l'interrompre, reformulez sa demande et apportez
+                    une réponse adaptée. Si nécessaire, appliquez la procédure de réclamation.</p>
+                </div>
+            </div>
+
+            <div class="faq-category">
+                <h3>FAQ – Changement Offre : Réponses aux préoccupations clients</h3>
+            </div>
+
+            <div class="faq">
+                <div class="faq-question" onclick="toggleFAQ(this)">1. J’ai constaté que votre catalogue d’offres voix et Internet a encore changé. Pourquoi avez-vous effectué ces changements ?</div>
+                <div class="faq-answer">
+                    <p><strong>Réponse :</strong><br>
+                    Nous comprenons votre préoccupation. Cette mise à jour vise à garantir des services fiables et de qualité malgré l’évolution des coûts du secteur. Nous avons également prévu plusieurs options afin que chaque client puisse choisir l’offre la plus adaptée à ses besoins et à son budget.</p>
+                </div>
+            </div>
+
+            <div class="faq">
+                <div class="faq-question" onclick="toggleFAQ(this)">2. Pourquoi avez-vous retiré les forfaits illimités de 5 000 F et 10 000 F ?</div>
+                <div class="faq-answer">
+                    <p><strong>Réponse :</strong><br>
+                    Ces forfaits ont été remplacés dans le cadre de la mise à jour de notre catalogue. Nous vous invitons à consulter les nouvelles offres disponibles afin de choisir celle qui correspond le mieux à vos usages.</p>
+                </div>
+            </div>
+
+            <div class="faq">
+                <div class="faq-question" onclick="toggleFAQ(this)">3. Pourquoi le montant offert lors de l’activation d’un forfait MaXi ou Internet a-t-il changé par rapport à ce que je recevais auparavant ?</div>
+                <div class="faq-answer">
+                    <p><strong>Réponse :</strong><br>
+                    Certains avantages ont été revus dans le cadre de l’évolution de nos offres. Cette mise à jour nous permet de continuer à vous offrir des services de qualité tout en proposant plusieurs options adaptées à vos différents besoins et budgets.</p>
+                </div>
+            </div>
+
+            <div class="faq">
+                <div class="faq-question" onclick="toggleFAQ(this)">4. Pourquoi devrions-nous continuer à vous faire confiance alors que les prix augmentent et que la qualité de service reste un sujet de préoccupation ?</div>
+                <div class="faq-answer">
+                    <p><strong>Réponse :</strong><br>
+                    Nous comprenons votre inquiétude. MTN reste pleinement engagé à améliorer la qualité de ses services, son réseau et l’accompagnement de ses clients. Votre confiance est importante pour nous, et nous continuons à investir pour vous offrir une meilleure expérience.</p>
+                </div>
+            </div>
+
+            <div class="faq">
+                <div class="faq-question" onclick="toggleFAQ(this)">5. Pourquoi devrais-je rester chez MTN ?</div>
+                <div class="faq-answer">
+                    <p><strong>Réponse :</strong><br>
+                    En restant chez MTN, vous bénéficiez d’un réseau étendu, d’offres variées, de solutions digitales pratiques et d’un accompagnement client continu. Nous restons mobilisés pour vous offrir une expérience toujours plus simple et fiable.</p>
+                </div>
+            </div>
+
+            <div class="faq">
+                <div class="faq-question" onclick="toggleFAQ(this)">6. Est-ce que les autres opérateurs appliqueront également ce type de changement ?</div>
+                <div class="faq-answer">
+                    <p><strong>Réponse :</strong><br>
+                    Chaque opérateur définit sa propre politique commerciale. Pour toute information concernant les offres d’autres opérateurs, nous vous recommandons de vous rapprocher directement de leurs services officiels.</p>
+                    <p>Chez MTN, notre priorité reste de proposer à nos clients des offres adaptées à leurs besoins tout en garantissant une expérience de qualité.</p>
+                </div>
+            </div>
+
+            <div class="faq">
+                <div class="faq-question" onclick="toggleFAQ(this)">7. Je pense quitter MTN pour rejoindre un autre opérateur. Que pouvez-vous me dire ?</div>
+                <div class="faq-answer">
+                    <p><strong>Réponse :</strong><br>
+                    Nous sommes désolés de votre déception. Avant de prendre votre décision, nous vous invitons à découvrir nos nouvelles offres, conçues pour répondre à différents besoins. Nous espérons continuer à mériter votre confiance par la qualité de nos services et de notre réseau.</p>
+                </div>
+            </div>
+
+            <div class="faq">
+                <div class="faq-question" onclick="toggleFAQ(this)">8. Les changements concernent-ils toutes les offres de votre catalogue ?</div>
+                <div class="faq-answer">
+                    <p><strong>Réponse :</strong><br>
+                    Une grande partie du catalogue a été revue pour plus de cohérence et de simplicité. Les changements varient toutefois selon les offres. Nous vous invitons à consulter nos canaux officiels pour connaître les détails des offres concernées.</p>
+                </div>
+            </div>
+
+            <div class="faq">
+                <div class="faq-question" onclick="toggleFAQ(this)">9. Les frais MoMo sont-ils concernés par ces changements ?</div>
+                <div class="faq-answer">
+                    <p><strong>Réponse :</strong><br>
+                    Non, les frais MoMo ne sont pas concernés par ces changements.</p>
+                </div>
+            </div>
+
+            <div class="faq">
+                <div class="faq-question" onclick="toggleFAQ(this)">10. Lors du dernier changement de prix, j’ai constaté une dégradation de la connexion Internet. Cela risque-t-il de se reproduire cette fois-ci ?</div>
+                <div class="faq-answer">
+                    <p><strong>Réponse :</strong><br>
+                    Nous comprenons votre inquiétude. MTN continue d’investir pour améliorer la capacité et la performance de son réseau. Notre objectif reste de vous offrir une connexion Internet plus stable, plus fiable et de meilleure qualité.</p>
+                </div>
+            </div>
+
+            <div class="faq">
+                <div class="faq-question" onclick="toggleFAQ(this)">11. Quels sont les avantages de vos nouvelles offres voix et Internet ?</div>
+                <div class="faq-answer">
+                    <p><strong>Réponse :</strong><br>
+                    Nos nouvelles offres permettent à chaque client de choisir une formule adaptée à ses besoins en voix, Internet et services digitaux :</p>
+                    <ul>
+                        <li>Plus de flexibilité dans le choix des forfaits ;</li>
+                        <li>Un catalogue simplifié ;</li>
+                        <li>Des offres adaptées aux différents besoins de communication et de connectivité ;</li>
+                        <li>Une meilleure lisibilité des avantages inclus.</li>
+                    </ul>
+                    <p>Nous vous invitons notamment à essayer notre nouvelle offre <strong>1 Giga Favi</strong>, qui vous donne accès gratuitement à <strong>WhatsApp, TikTok et Facebook pendant 24 heures</strong>, en plus de <strong>1 Go d’Internet</strong> pour tous vos autres usages Internet.</p>
+                </div>
+            </div>
+
+            <div class="faq">
+                <div class="faq-question" onclick="toggleFAQ(this)">12. J’activais auparavant l’offre XXXX, mais je ne la retrouve plus dans votre catalogue. Pourquoi ? Quelle offre la remplace et quelles sont mes alternatives ?</div>
+                <div class="faq-answer">
+                    <p><strong>Réponse :</strong><br>
+                    Certaines offres ont été retirées ou remplacées dans le cadre de la mise à jour du catalogue. Pour identifier l’offre la plus adaptée à vos besoins, nous vous invitons à composer <strong>*199#</strong> ou à consulter l’application <strong>MyMTN</strong>.</p>
+                </div>
+            </div>
+
+            <div class="faq">
+                <div class="faq-question" onclick="toggleFAQ(this)">13. C’est la troisième fois que les prix changent. Ce changement est-il définitif ou d’autres évolutions sont-elles prévues prochainement ?</div>
+                <div class="faq-answer">
+                    <p><strong>Réponse :</strong><br>
+                    À ce jour, nous communiquons sur les changements actuellement prévus. Si de nouvelles évolutions devaient intervenir, nous nous engageons à informer nos clients de manière claire, transparente et dans les délais appropriés.</p>
+                </div>
+            </div>
+
+            <div class="faq">
+                <div class="faq-question" onclick="toggleFAQ(this)">14. J’ai activé un forfait MaXi ou Data qui expire dans deux jours, mais il me reste encore du volume ou des minutes. Vais-je les perdre ?</div>
+                <div class="faq-answer">
+                    <p><strong>Réponse :</strong><br>
+                    Non. Votre forfait reste valable jusqu’à sa date normale d’expiration, conformément aux conditions de l’offre souscrite. Vous pouvez donc continuer à utiliser le volume restant avant la fin de sa période de validité.</p>
+                </div>
+            </div>
+
+        </section>
+
+
+        <!-- RÉCLAMATIONS -->
+
+        <section id="reclamations" class="section">
+
+            <div class="section-header">
+                <span>⚠️</span>
+                <h2>Réclamations</h2>
+            </div>
+
+            <div class="procedure">
+
+                <h3>Gestion d'une réclamation</h3>
+
+                <div class="box warning">
+                    <strong>⚠️ Attention</strong><br>
+                    Une réclamation doit être prise au sérieux et traitée conformément
+                    aux procédures en vigueur.
+                </div>
+
+                <div class="step"><div class="step-number">1</div><div>Écouter le client.</div></div>
+                <div class="step"><div class="step-number">2</div><div>Identifier précisément l'objet de la réclamation.</div></div>
+                <div class="step"><div class="step-number">3</div><div>Vérifier les informations disponibles.</div></div>
+                <div class="step"><div class="step-number">4</div><div>Apporter une réponse ou procéder à l'escalade.</div></div>
+
+            </div>
+
+            <div class="procedure">
+                <h3 class="subheading">PLAINTE RÉSEAU</h3>
+
+                <div class="box info">
+                    <strong>Un appel qui coupe ? Une connexion internet instable ?</strong><br>
+                    Ne gardez plus le problème pour vous !
+                </div>
+
+                <p>Avec l'application MyMTN, vous pouvez désormais signaler directement vos problèmes de réseau et de couverture. Chaque signalement nous aide à améliorer votre expérience et à construire un meilleur réseau pour tous.</p>
+
+                <p><strong>Accès :</strong> <a href="https://my.mtn.bj/plaintes/plaintes-reseau/" target="_blank" rel="noopener noreferrer">https://my.mtn.bj/plaintes/plaintes-reseau/</a></p>
+            </div>
+
+        </section>
+
+
+        <!-- INCIDENTS -->
+
+        <section id="incidents" class="section">
+
+            <div class="section-header">
+                <span>🚨</span>
+                <h2>Incidents &amp; escalades</h2>
+            </div>
+
+            <div class="procedure">
+
+                <h3>Gestion d'un incident</h3>
+
+                <div class="box danger">
+                    <strong>🚨 INCIDENT</strong><br>
+                    Identifier l'incident et appliquer immédiatement la procédure correspondante.
+                </div>
+
+                <div class="step"><div class="step-number">1</div><div>Identifier la nature de l'incident.</div></div>
+                <div class="step"><div class="step-number">2</div><div>Vérifier si une procédure connue existe.</div></div>
+                <div class="step"><div class="step-number">3</div><div>Informer le client avec une formulation adaptée.</div></div>
+                <div class="step"><div class="step-number">4</div><div>Escalader lorsque nécessaire.</div></div>
+
+            </div>
+
+        </section>
+
+
+        <!-- OUTILS -->
+
+        <section id="outils" class="section">
+
+            <div class="section-header">
+                <span>🛠</span>
+                <h2>Outils &amp; Processus</h2>
+            </div>
+
+            <div class="cards">
+
+                <div class="card">
+                    <div class="card-icon">🖥️</div>
+                    <h3>DCLM</h3>
+                    <p>Permet notamment de vérifier toutes les informations GSM d’un abonné, d’activer les services à valeur ajoutée, de consulter le solde crédit, de vérifier la date d’expiration d’un numéro et de consulter le profil d’un numéro.</p>
+                </div>
+
+                <div class="card">
+                    <div class="card-icon">💰</div>
+                    <h3>ECW</h3>
+                    <p>Principalement dédié aux opérations liées à <strong>Mobile Money (MoMo)</strong>. Permet de consulter les dernières opérations effectuées, le nom d’enregistrement, la date de naissance, le type de profil du compte MoMo, le solde du compte ainsi que d’autres informations relatives au compte.</p>
+                </div>
+
+                <div class="card">
+                    <div class="card-icon">🪪</div>
+                    <h3>IRM</h3>
+                    <p>Permet de consulter les informations relatives à l’enregistrement d’un abonné, notamment le nombre de numéros enregistrés à son nom, et d’effectuer la réinitialisation du code PIN Mobile Money.</p>
+                </div>
+
+                <div class="card">
+                    <div class="card-icon">🔄</div>
+                    <h3>HXC</h3>
+                    <p>Permet de consulter les opérations de crédit et les transferts de crédit effectués entre abonnés. Permet également de procéder à la réinitialisation du code PIN <strong>Me2U</strong>.</p>
+                </div>
+
+                <div class="card">
+                    <div class="card-icon">📦</div>
+                    <h3>OTD</h3>
+                    <p>Permet de consulter les informations relatives aux <strong>offres et services de MTN Bénin</strong>.</p>
+                </div>
+
+                <div class="card">
+                    <div class="card-icon">📶</div>
+                    <h3>CEM</h3>
+                    <p>Permet notamment de vérifier la consommation des forfaits, d’identifier la qualité de couverture réseau dans la zone de l’abonné et de consulter les applications régulièrement utilisées. Permet également de vérifier le type de téléphone, le type de connexion, de retracer l’IMEI ainsi que les numéros insérés dans le téléphone, entre autres informations.</p>
+                </div>
+
+                <div class="card">
+                    <div class="card-icon">📊</div>
+                    <h3>MOMO RAPPORT</h3>
+                    <p>Permet de consulter et d’exploiter les informations et relevés liés aux opérations <strong>Mobile Money</strong>, notamment pour effectuer le <strong>checking des transactions</strong>.</p>
+                </div>
+
+                <div class="card">
+                    <div class="card-icon">⚡</div>
+                    <h3>SBEE</h3>
+                    <p>Permet de générer les <strong>codes STS</strong> correspondant aux recharges SBEE des abonnés.</p>
+                </div>
+
+            </div>
+
+            <div class="note" style="margin-top:20px;">
+                <strong>🔐 NB : Confidentialité et sécurité</strong>
+                <p style="margin:8px 0 0;">Les accès aux différentes applications sont <strong>personnels et confidentiels</strong>. L’accès à chaque application dépend des habilitations attribuées à chaque utilisateur.</p>
+                <p style="margin:8px 0 0;"><strong>Les identifiants et mots de passe ne doivent en aucun cas être partagés</strong> avec d’autres personnes. Chaque utilisateur est responsable de la confidentialité de ses accès.</p>
+            </div>
+
+        </section>
+
+
+        <!-- BONNES PRATIQUES -->
+
+        <section id="bonnes-pratiques" class="section">
+
+            <div class="section-header">
+                <span>⭐</span>
+                <h2>BEST PRATICES</h2>
+            </div>
+
+            <div class="cards">
+
+                <div class="card">
+                    <div class="card-icon">👂</div>
+                    <h3>Écouter</h3>
+                    <p>Laisser le client exposer clairement sa demande.</p>
+                </div>
+
+                <div class="card">
+                    <div class="card-icon">🔎</div>
+                    <h3>Vérifier</h3>
+                    <p>Toujours vérifier l'information avant de la communiquer.</p>
+                </div>
+
+                <div class="card">
+                    <div class="card-icon">💬</div>
+                    <h3>Communiquer</h3>
+                    <p>Utiliser un langage clair, professionnel et rassurant.</p>
+                </div>
+
+                <div class="card">
+                    <div class="card-icon">✅</div>
+                    <h3>Résoudre</h3>
+                    <p>Rechercher la solution adaptée avant d'escalader.</p>
+                </div>
+
+            </div>
+
+            <div class="procedure">
+                <h3 class="subheading">1. PROCÉDURE DE RÉINITIALISATION DE MOT DE PASSE — RELEVÉ ABONNÉS</h3>
+                <p><strong>Portail :</strong> <a href="https://admin-momo-rapports.mtn.bj/" target="_blank" rel="noopener noreferrer">https://admin-momo-rapports.mtn.bj/</a></p>
+
+                <h4>Mode d'utilisation du portail</h4>
+                <p><strong>1. Connexion</strong></p>
+                <ul>
+                    <li>Accédez au portail : <a href="https://admin-momo-rapports.mtn.bj/" target="_blank" rel="noopener noreferrer">https://admin-momo-rapports.mtn.bj/</a></li>
+                    <li>User : saisissez votre identifiant (ex. : admin2290152000959)</li>
+                    <li>Mot de passe : utilisez le mot de passe partagé ou choisi.</li>
+                </ul>
+
+                <p><strong>2. Recherche du profil</strong></p>
+                <p>Dans le menu Clients à gauche, sélectionnez :</p>
+                <ul>
+                    <li>Abonnés pour un client P100 ;</li>
+                    <li>POS pour un numéro principal marchand ;</li>
+                    <li>Numéros pour le numéro rattaché à un marchand.</li>
+                </ul>
+
+                <p><strong>3. Recherche du numéro</strong></p>
+                <p>Cliquez sur Rechercher, saisissez le numéro au format 0152000959, puis lancez la recherche.</p>
+                <p>Une fois le numéro affiché, dans le menu Actions à droite, deux options sont disponibles :</p>
+                <ul>
+                    <li><strong>Reset Account :</strong> permet de désactiver ou de supprimer le compte de relevé de l'abonné <em>(à utiliser que si important et que l’abonné demande)</em>.</li>
+                    <li><strong>Reset Password :</strong> permet d'envoyer un code OTP à l'abonné afin qu'il puisse réinitialiser son mot de passe. C’est cette option qui devra être utilisée dans la majorité des cas.</li>
+                </ul>
+
+                <p><strong>4. Finalisation par l'abonné</strong></p>
+                <div class="box info">Après réception du code OTP, l'abonné devra composer la commande suivante sur le numéro concerné : <span class="ussd">*880*10*OTP reçu*NOUVEAU_MOT_DE_PASSE#</span> afin de finaliser la réinitialisation de son mot de passe.</div>
+
+                <div class="note"><strong>Important :</strong> Le portail est accessible uniquement depuis les postes de travail de l’entreprise. Il ne fonctionne ni sur téléphone, ni sur un autre appareil personnel.</div>
+                <p>Je reste disponible en cas de besoin ou de difficulté.</p>
+            </div>
+
+            <div class="procedure">
+                <h3 class="subheading">2. INFO ARCEP POUR TOUS</h3>
+                <p><strong>Savez-vous que votre SIM peut désormais être associée à un compte Mobile Money d'un autre opérateur ?</strong></p>
+                <p><strong>Eh oui !</strong></p>
+                <p>Depuis janvier 2025, grâce à l'action de régulation de l'ARCEP BENIN, les opérateurs ont mis en œuvre l'interconnexion des plateformes des Émetteurs de Monnaie Électronique (EME) avec l'ensemble des réseaux mobiles au Bénin.</p>
+                <p>Autrefois, les services MTN Mobile Money, Moov Money et Celtiis Cash étaient chacun accessibles uniquement sur un réseau mobile spécifique. Cette situation limitait le choix des consommateurs et n'était pas conforme aux exigences réglementaires.</p>
+                <p>Désormais, quel que soit votre opérateur mobile, votre numéro peut être associé simultanément à vos comptes MTN Mobile Money, Moov Money et Celtiis Cash.</p>
+
+                <h4>Ce que cela change pour vous :</h4>
+                <ul>
+                    <li>Plus besoin de multiplier les cartes SIM ou de changer d’opérateur mobile pour utiliser les différents services Mobile Money.</li>
+                    <li>Liberté de choisir et de changer d'opérateur MoMo sans changer de numéro.</li>
+                    <li>Transactions facilitées, quel que soit le réseau mobile utilisé.</li>
+                    <li>Plus de flexibilité pour comparer les offres et choisir le service le mieux adapté à vos besoins.</li>
+                    <li>Un pas de plus vers une meilleure inclusion financière pour tous les Béninois.</li>
+                </ul>
+                <p>En faisant appliquer la réglementation, l'ARCEP BENIN a permis de lever les barrières techniques entre les réseaux, de renforcer la concurrence entre les acteurs et de favoriser une plus grande inclusion financière au bénéfice des consommateurs.</p>
+                <p>Toutes ces avancées sont détaillées dans le Rapport Annuel d'Activités 2025 de l'ARCEP BENIN (p. 49), disponible sur <a href="https://www.arcep.bj" target="_blank" rel="noopener noreferrer">www.arcep.bj</a> ou via <a href="https://bit.ly/4ys7Irf" target="_blank" rel="noopener noreferrer">https://bit.ly/4ys7Irf</a></p>
+                <p><strong>Un seul numéro. Trois portefeuilles Mobile Money.</strong></p>
+                <p>#ARCEPBENIN #Régulation #Interconnexion #EME #InclusionFinancière #MobileMoney</p>
+            </div>
+
+            <div class="procedure">
+                <h3 class="subheading">3. PROCÉDURE DE RESET PIN MOMO</h3>
+                <h4>1. Vérifications obligatoires avant toute réinitialisation code PIN MoMo</h4>
+                <p>Avant d'initier un Reset PIN, assurez-vous de vérifier :</p>
+                <ul>
+                    <li>La conformité de l'identité du client (Nom, prénom, date et lieu de naissance).</li>
+                    <li>La conformité du solde Mobile Money.</li>
+                    <li>L'absence de SIM Swap au cours des 48 dernières heures.</li>
+                    <li>L'absence de modification des informations d'identité dans les 48 dernières heures.</li>
+                    <li>L'absence d'utilisation du PIN au cours des 48 dernières heures.</li>
+                    <li>Que le dernier dépôt est supérieur ou égal à 100 FCFA.</li>
+                    <li>Que le compte n'est pas dans un statut bloqué.</li>
+                </ul>
+                <p>Les contrôles doivent être effectués dans ECW, IRM/DIRM et DCLM.</p>
+
+                <h4>2. Authentification du client</h4>
+                <p>Avant l'envoi de l'OTP, le client doit confirmer les informations suivantes :</p>
+                <ul>
+                    <li>Nom d'enregistrement de la SIM ;</li>
+                    <li>Date et ville de naissance ;</li>
+                    <li>NPI de l'abonné (IRM) en remplacement du solde Mobile Money ;</li>
+                    <li>Nature, montant et date de la dernière opération Mobile Money ;</li>
+                    <li>Solde Airtime (optionnelle) ;</li>
+                    <li>Année d'achat de la SIM (optionnelle).</li>
+                </ul>
+                <p><strong>NB :</strong> Afin d'assister l'abonné, il est requis d'obtenir au moins quatre (04) informations conformes, dont trois (03) informations relatives à Mobile Money.</p>
+
+                <h4>3. Traitement selon le solde Mobile Money</h4>
+                <p><strong>Solde inférieur à 20 000 FCFA</strong></p>
+                <ul>
+                    <li>Envoyer l'OTP via ECW.</li>
+                    <li>Vérifier la réception de l'OTP.</li>
+                    <li>Accompagner le client pour finaliser la réinitialisation via <span class="ussd">*880#</span>.</li>
+                    <li>Confirmer que l'opération est terminée avec succès.</li>
+                </ul>
+                <p><strong>Solde supérieur ou égal à 20 000 FCFA</strong></p>
+                <ul>
+                    <li>Envoyer l'OTP via ECW.</li>
+                    <li>Maintenir le client en ligne.</li>
+                    <li>Solliciter immédiatement l'Agent Approbateur pour la validation de l'OTP.</li>
+                    <li>Une fois l'OTP validé, assister le client jusqu'à la fin de la procédure.</li>
+                </ul>
+
+                <h4>4. Canal WhatsApp</h4>
+                <p>Avant tout envoi d'OTP, vérifiez que le numéro concerné est bien connecté sur WhatsApp.</p>
+
+                <h4>5. Cas nécessitant un refus ou un report</h4>
+                <p>Ne procédez pas au Reset PIN lorsque :</p>
+                <ul>
+                    <li>Un SIM Swap a été effectué dans les 48 dernières heures.</li>
+                    <li>Un changement d'identité est intervenu dans les 48 dernières heures.</li>
+                    <li>Le PIN a été utilisé dans les 48 dernières heures.</li>
+                    <li>Le dernier dépôt est inférieur à 100 FCFA.</li>
+                    <li>Le compte est bloqué.</li>
+                </ul>
+                <p>Dans ces situations, informez le client et invitez-le à patienter jusqu'à la fin du délai réglementaire ou à se rendre en agence selon le cas.</p>
+
+                <h4>6. Cas des comptes Marchands, LVC et P2M</h4>
+                <p>Les demandes de Reset PIN concernant les comptes Marchands, LVC et P2M ne sont pas traitées par le Call Center ni par le canal Digital.</p>
+                <p><strong>➡️ Orientez systématiquement ces abonnés vers une agence pour prise en charge.</strong></p>
+
+                <h4>7. Traçabilité obligatoire</h4>
+                <p>À la fin de chaque traitement, renseignez systématiquement les notes dans DCLM en précisant le motif du contact ainsi que les actions réalisées.</p>
+
+                <h4>8. Rappel important</h4>
+                <ul>
+                    <li>Ne proposez jamais un code PIN au client.</li>
+                    <li>Conseillez-lui de choisir un PIN difficile à deviner et d'éviter les chiffres consécutifs ou la répétition du même chiffre.</li>
+                    <li>La sécurité du compte Mobile Money dépend du strict respect de cette procédure.</li>
+                </ul>
+                <p>Merci à tous de veiller à l'application rigoureuse de ces dispositions afin de garantir la sécurité des comptes Mobile Money et d'améliorer l'expérience de nos abonnés.</p>
+            </div>
+
+            <div class="procedure">
+                <h3 class="subheading">4. ASSISTANCE CODE PUK</h3>
+                <p>Pour toute assistance relative à une demande de code PUK, avant toute remontée au Support via DCLM ou YelloChat, il est impératif de procéder à l'authentification de l'abonné.</p>
+                <p>Les informations à vérifier sont les suivantes :</p>
+                <ul>
+                    <li>Nom d'enregistrement de la SIM ;</li>
+                    <li>Date de naissance ;</li>
+                    <li>NPI de l'abonné ;</li>
+                    <li>Solde Airtime.</li>
+                </ul>
+                <p>Merci de veiller au strict respect de cette procédure afin de garantir la sécurité des informations de nos abonnés et la conformité du traitement des demandes.</p>
+            </div>
+
+            <div class="procedure">
+                <h3 class="subheading">5. PROCÉDURE DE TRAITEMENT — TRANSFERT RÉGIONAL REÇU / BANQUE</h3>
+                <h4>Gestion des transferts régionaux reçus sur un numéro MTN Bénin</h4>
+                <p>Lorsqu’un transfert régional est reçu sur un numéro MTN Bénin, il convient de procéder au blocage du compte du bénéficiaire (receveur), conformément aux procédures en vigueur, puis d’initier une plainte au support.</p>
+                <p>Par ailleurs, nous vous informons que le support dispose désormais de la possibilité de bloquer un montant sur le compte Mobile Money d’un abonné, sans qu’il ne s’agisse d’une réservation. (Il s'agit du support MTN Bénin, les CA et les CAA)</p>
+                <p>Ainsi, lorsqu’une opération est reçue par erreur depuis l’international sur un compte MoMo MTN, les fonds concernés peuvent être temporairement bloqués dans l’attente du retour du partenaire.</p>
+                <p>Le support ne peut pas maintenir un blocage de montant de manière indéfinie.</p>
+                <p>Par conséquent, nous proposons que seules les demandes de blocage de montant lui soient désormais transmises. Merci de ne plus solliciter le support pour effectuer un réajustement à cet effet.</p>
+                <div class="box warning"><strong>Une fois la demande de blocage transmise</strong>, merci d'informer l'abonné que le compte receveur sera bloqué pour une durée maximale de 72 heures. Durant ce délai, il devra impérativement se rapprocher du service client de l'opérateur d'envoi afin que celui-ci initie la plainte auprès du support du pays d'envoi.</div>
+                <p>À défaut d'une plainte initiée dans ce délai, le blocage sera levé et le receveur pourra disposer librement des fonds.</p>
+                <p><strong>NB :</strong></p>
+                <ul>
+                    <li>Informez systématiquement l'abonné qu'il dispose d'un délai maximum de 72 heures pour saisir le service client de l'opérateur envoyeur.</li>
+                    <li>Ne mentionnez plus une durée de blocage de 07 jours à l'abonné. La durée à communiquer est de 72 heures.</li>
+                    <li>Les demandes adressées au support doivent porter uniquement sur le blocage du montant.</li>
+                </ul>
+
+                <h4>Canevas – Plainte Transfert International Reçu MTN</h4>
+                <ul>
+                    <li>N° Envoyeur :</li>
+                    <li>N° Receveur :</li>
+                    <li>Référence/ID :</li>
+                    <li>Pays d'envoi :</li>
+                    <li>Date et heure de la transaction :</li>
+                    <li>Montant envoyé :</li>
+                    <li>N° du receveur légitime :</li>
+                </ul>
+                <p><strong>Consigne :</strong> Merci de nous assister pour le blocage du montant sur le compte du receveur.</p>
+            </div>
+
+            <div class="procedure">
+                <h3 class="subheading">6. GESTION DES GROS MONTANTS (SLA)</h3>
+                <p>Toute demande de dépôt erroné d'un montant supérieur ou égal à 5 000 FCFA est soumis à un délai de traitement (SLA) de 48 heures, à compter de sa prise en charge dès la réception de la plainte (111 et Digital).</p>
+            </div>
+
+            <div class="procedure">
+                <h3 class="subheading">7. GESTION DES COMPTES DORMANTS</h3>
+                <p>Un compte est considéré comme dormant après neuf (09) mois d’inactivité.</p>
+            </div>
+
+            <div class="procedure">
+                <h3 class="subheading">8. PLAINTES RELATIVES AUX SIM MARCHANDES (AGENTS, LVC, P2M)</h3>
+                <p>Dans le cadre de l’amélioration de la gestion des plaintes relatives aux SIM marchandes (Agents, LVC, P2M), nous vous prions de ne plus assigner ces cas à CS Support via DCLM, Yellochat. Nous vous remercions de bien vouloir remonter systématiquement ces plaintes au Team Leader (TL) en vacation, qui se chargera de leur transmission selon le processus approprié.</p>
+                <p>Nous vous prions de ne plus effectuer de sécurisation sur les comptes CNHU, 1XBET, MOMOKASH, PRÊT XPRESS, MFS COL, ainsi que sur tous les comptes comportant la mention MFS.</p>
+                <p>Nous vous invitons également à ne procéder au blocage d’un de ces comptes.</p>
+            </div>
+
+            <div class="procedure">
+                <h3 class="subheading">9. INFOS SELF REVERSAL</h3>
+                <p>Je tiens à vous informer qu’il est désormais possible de récupérer votre argent de 1 à 2.000.000f en cas de transfert erroné grâce au SELF MoMo REVERSAL.</p>
+                <div class="box info">
+                    <strong>Pour sécuriser votre argent :</strong> l’initiateur du transfert erroné doit composer : <span class="ussd">*880*57*Numéro erroné*Montant concerné#</span>
+                </div>
+                <p><strong>Cas d’échec :</strong> La réservation n’est pas possible si l’argent reçu par erreur a déjà été entamé ou retiré. Dans ce cas, l’initiateur reçoit une notification l’informant que la demande a échoué. Si le montant a seulement été partiellement utilisé, l’abonné peut récupérer ce qui reste en agence ou en nous contactant immédiatement par SMS au 111 pour assistance.</p>
+                <p>Les transferts régionaux et/ou internationaux ne sont pas éligibles à la réservation.</p>
+                <p><strong>Cas de succès :</strong> Une fois la réservation faite, l’abonné qui a reçu les fonds peut approuver la demande en composant : <span class="ussd">*880*56#</span>.</p>
+                <p>L’initiateur du MoMo REVERSAL dispose de 10 jours pour récupérer le montant réservé. Passé ce délai, la somme est automatiquement rétablie sur le compte du receveur.</p>
+                <p><strong>À noter :</strong> Les Marchands et les SIM MoMoPay ne peuvent pas effectuer de SELF MoMo REVERSAL.</p>
+            </div>
+
+        </section>
+
+
+        <!-- GLOSSAIRE -->
+
+        <section id="glossaire" class="section">
+
+            <div class="section-header">
+                <span>📚</span>
+                <h2>Glossaire</h2>
+            </div>
+
+            <div class="procedure">
+                <p><strong>Agent :</strong> collaborateur chargé de prendre en charge les demandes des clients.</p><br>
+                <p><strong>Escalade :</strong> transmission d'une demande à un niveau ou une équipe compétente.</p><br>
+                <p><strong>FAQ :</strong> Frequently Asked Questions, ou questions fréquemment posées.</p><br>
+                <p><strong>Kpede Kpede :</strong> offre de financement de terminaux (Device Financing) avec dépôt initial et paiement quotidien échelonné.</p><br>
+                <p><strong>MoMoKash :</strong> service de prêt MTN MoMo proposé en partenariat avec UBA.</p><br>
+                <p><strong>MoMoSayaa :</strong> service d'épargne MTN MoMo en partenariat avec UBA, avec intérêt mensuel.</p><br>
+                <p><strong>VoLTE (Voice over LTE) :</strong> technologie permettant de passer des appels voix via le réseau 4G/LTE, avec une meilleure qualité audio.</p><br>
+                <p><strong>Free Roaming (ECOWAS) :</strong> accord régional offrant 30 jours de réception d'appels gratuite en itinérance dans certains pays partenaires (Togo, Ghana, Sénégal).</p><br>
+                <p><strong>APN :</strong> Access Point Name, paramètre réseau nécessaire pour la connexion data (APN MTN Bénin : internet.mtn.bj).</p><br>
+                <p><strong>IMEI :</strong> identifiant unique du terminal, utilisé notamment pour le suivi des dossiers Kpede Kpede / Device Financing.</p><br>
+                <p><strong>USSD :</strong> codes courts (ex. *880#, *123#) permettant d'accéder aux services MTN sans connexion internet.</p>
+            </div>
+
+        </section>
+
+    </div>
+
+
+    <footer>
+
+        <strong>📶 GUIDE OPÉRATIONNEL MTN</strong>
+
+        <p>
+            Base de connaissances interne — Actualités et procédures MTN-MCB 2026 —
+            Version 2.0 développé par INTREPIDE
+        </p>
+
+    </footer>
+
+</main>
+
+
+<script>
+
+/* =========================
+   NAVIGATION
+========================= */
+
+function goTo(id){
+
+    document.getElementById(id)
+        .scrollIntoView({
+            behavior:"smooth"
+        });
+
+    closeMenu();
+
+}
+
+
+function goHome(){
+
+    window.scrollTo({
+        top:0,
+        behavior:"smooth"
+    });
+
+}
+
+
+/* =========================
+   MOBILE MENU
+========================= */
+
+function toggleMenu(){
+
+    document
+        .getElementById("sidebar")
+        .classList.toggle("open");
+
+}
+
+
+function closeMenu(){
+
+    document
+        .getElementById("sidebar")
+        .classList.remove("open");
+
+}
+
+
+/* =========================
+   FAQ
+========================= */
+
+function toggleFAQ(element){
+
+    const faq = element.parentElement;
+
+    faq.classList.toggle("open");
+
+}
+
+
+/* =========================
+   SEARCH
+========================= */
+
+function syncSearch(value){
+
+    const input =
+        document.getElementById("searchInput");
+
+    input.value = value;
+
+    searchGuide();
+
+}
+
+
+function searchGuide(){
+
+    const input =
+        document.getElementById("searchInput");
+
+    const query =
+        input.value.toLowerCase().trim();
+
+    const results =
+        document.getElementById("searchResults");
+
+
+    if(query.length < 2){
+
+        results.style.display = "none";
+
+        return;
+
+    }
+
+
+    const sections =
+        document.querySelectorAll(
+            ".procedure, .faq"
+        );
+
+
+    let found = [];
+
+
+    sections.forEach(section => {
+
+        const text =
+            section.innerText.toLowerCase();
+
+        if(text.includes(query)){
+
+            let title =
+                section.querySelector(
+                    "h3,.faq-question"
+                );
+
+            if(title){
+
+                found.push({
+                    title:title.innerText,
+                    element:section
+                });
+
+            }
+
+        }
+
+    });
+
+
+    results.innerHTML = "";
+
+
+    if(found.length === 0){
+
+        results.innerHTML =
+            "<div class='result'>Aucun résultat trouvé.</div>";
+
+    }else{
+
+        found.slice(0,10).forEach(item => {
+
+            const result =
+                document.createElement("div");
+
+            result.className = "result";
+
+            result.innerHTML =
+                "<strong>"+item.title+"</strong>";
+
+            result.onclick = function(){
+
+                item.element.scrollIntoView({
+                    behavior:"smooth"
+                });
+
+                if(item.element.classList.contains("faq")){
+                    item.element.classList.add("open");
+                }
+
+                results.style.display="none";
+
+            };
+
+            results.appendChild(result);
+
+        });
+
+    }
+
+
+    results.style.display = "block";
+
+}
+
+
+/* =========================
+   ACTIVE MENU
+========================= */
+
+const menuLinks =
+    document.querySelectorAll(".menu a");
+
+
+window.addEventListener("scroll",()=>{
+
+    let current = "";
+
+    document
+        .querySelectorAll(".section,#accueil")
+        .forEach(section => {
+
+            const top =
+                section.offsetTop - 150;
+
+            if(window.scrollY >= top){
+
+                current =
+                    section.getAttribute("id");
+
+            }
+
+        });
+
+
+    menuLinks.forEach(link => {
+
+        link.classList.remove("active");
+
+        if(
+            link.getAttribute("href")
+            === "#"+current
+        ){
+
+            link.classList.add("active");
+
+        }
+
+    });
+
+});
+
+</script>
+
+</body>
+</html>
