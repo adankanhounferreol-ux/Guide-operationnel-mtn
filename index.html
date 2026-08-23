@@ -807,6 +807,7 @@ footer p{
         <a href="#incidents">🚨 Incidents &amp; escalades</a>
         <a href="#outils">🛠️ Outils &amp; processus</a>
         <a href="#bonnes-pratiques">⭐ BEST PRATICES</a>
+        <a href="#best-practices-complement">📌 Nouveautés opérationnelles</a>
 
         <div class="menu-title">Ressources</div>
 
@@ -2499,7 +2500,38 @@ footer p{
         </section>
 
 
-        <!-- GLOSSAIRE -->
+        <!-- NOUVEAUTÉS OPÉRATIONNELLES -->
+<section id="best-practices-complement" class="section">
+<div class="section-header"><span>📌</span><h2></h2></div>
+<div class="procedure"><h3>🎂 MTN Récompense Anniversaire</h3>
+<p><strong>Avant l’anniversaire :</strong> confirmer la date de naissance avec <span class="ussd">*119*2#</span> → <strong>3</strong>, ou directement <span class="ussd">*119*2*3#</span>. En cas de non-conformité, orienter l’abonné vers une agence MTN avec une pièce d’identité valide.</p>
+<p><strong>Le jour de l’anniversaire :</strong> après réception du message de souhait, composer <span class="ussd">*119*2#</span> → <strong>1</strong> pour activer le bonus.</p>
+<div class="box info"><strong>Bonus :</strong> 400 Mo valables 48 heures, utilisables une seule fois par an. Réservé aux abonnés ayant préalablement confirmé leur date d’anniversaire.</div>
+<p>Les autres offres restent activables ; la priorité de consommation dépend des dates et heures d’expiration. <strong>Consommation :</strong> <span class="ussd">*119*2#</span> → <strong>2</strong>. <strong>Désactivation :</strong> <span class="ussd">*119*2#</span> → <strong>4</strong>.</p></div>
+
+<div class="procedure"><h3>💰 Codes USSD Marchand MoMo</h3><div class="table-wrap"><table><thead><tr><th>Opération</th><th>Parcours / Code</th></tr></thead><tbody>
+<tr><td>Solde principal</td><td><span class="ussd">*840#</span> → <strong>1</strong></td></tr><tr><td>Retrait</td><td><span class="ussd">*840#</span> → Valider → <strong>2</strong> → Valider</td></tr><tr><td>Dépôt</td><td><span class="ussd">*840#</span> → Valider → <strong>3</strong> → Valider</td></tr>
+<tr><td>Vente de crédit</td><td><span class="ussd">*840#</span> → <strong>5</strong> → <strong>1</strong> ou <span class="ussd">*840*50*numéro client#</span></td></tr><tr><td>Vente de forfaits Internet</td><td><span class="ussd">*840#</span> → <strong>5</strong> → <strong>2</strong> → <strong>1</strong></td></tr>
+<tr><td>Internet jour / semaine / mois / illimité</td><td><span class="ussd">*840*123*1*numéro client#</span> / <span class="ussd">*840*123*2*numéro client#</span> / <span class="ussd">*840*123*3*numéro client#</span> / <span class="ussd">*840*123*4*numéro client#</span></td></tr>
+<tr><td>Vente Maxi</td><td><span class="ussd">*840#</span> → <strong>5</strong> → <strong>2</strong> → <strong>3</strong></td></tr><tr><td>Maxi jour / semaine / mois</td><td><span class="ussd">*840*173*1*numéro client#</span> / <span class="ussd">*840*173*2*numéro client#</span> / <span class="ussd">*840*173*3*numéro client#</span></td></tr>
+<tr><td>Go Pack jour / semaine / mois</td><td><span class="ussd">*840*172*1*numéro client#</span> / <span class="ussd">*840*172*2*numéro client#</span> / <span class="ussd">*840*172*3*numéro client#</span></td></tr>
+</tbody></table></div></div>
+
+<div class="procedure"><h3>🆕 Nouveaux codes courts MoMo — Accepteurs</h3><div class="table-wrap"><table><thead><tr><th>Service</th><th>Code direct</th></tr></thead><tbody>
+<tr><td>Maxi jour / semaine / mois</td><td><span class="ussd">*840*173*1*numéro#</span> / <span class="ussd">*840*173*2*numéro#</span> / <span class="ussd">*840*173*3*numéro#</span></td></tr>
+<tr><td>Internet jour / semaine / mois / illimité</td><td><span class="ussd">*840*123*1*numéro#</span> / <span class="ussd">*840*123*2*numéro#</span> / <span class="ussd">*840*123*3*numéro#</span> / <span class="ussd">*840*123*4*numéro#</span></td></tr>
+</tbody></table></div></div>
+
+<div class="procedure"><h3>📲 Nouvelle application MTN MoMo</h3><p>Disponible sur Android et iPhone.</p><p><strong>Android :</strong> <a href="https://play.google.com/store/apps/details?id=mtnft.momo.consumer" target="_blank" rel="noopener">Télécharger MTN MoMo</a></p><p><strong>iPhone :</strong> <a href="https://apps.apple.com/us/app/mymomo-new/id6532622230" target="_blank" rel="noopener">Télécharger MTN MoMo</a></p><h4>Première connexion</h4><ol><li>Insérer la SIM MTN concernée.</li><li>Activer les données mobiles de cette SIM.</li><li><strong>Ne pas utiliser le Wi-Fi</strong> lors de l’activation initiale.</li><li>Ouvrir l’application et choisir « Se connecter ».</li><li>Saisir le code PIN.</li><li>Suivre les instructions affichées.</li></ol></div>
+
+<div class="procedure"><h3>📡 eSIM — Conversion d’une SIM MTN en eSIM</h3><h4>Conditions préalables</h4><ul><li>Téléphone compatible eSIM.</li><li>Application MyMTN installée.</li><li>Connexion Internet différente de celle de la SIM à convertir.</li><li>Pièce d’identité valide.</li><li>SIM MTN active, en possession de l’abonné et insérée dans un téléphone.</li></ul><h4>Étape 1 — Accéder au service</h4><p><strong>MyMTN → Découvrir plus → MTN eSIM → Commencer</strong>, puis « Continuer ».</p><h4>Étape 2 — Identifier le numéro</h4><p>Saisir le numéro MTN. Si la SIM n’est pas dans le téléphone, composer <span class="ussd">*#06#</span> pour obtenir l’IMEI. Valider puis saisir l’OTP à 4 chiffres reçu par SMS.</p><h4>Étape 3 — Vérifier l’identité</h4><p>Choisir le statut : Béninois, Ressortissant CEDEAO ou Étranger hors CEDEAO. Sélectionner le type de pièce et importer/scanner le document. Pour une CNI biométrique, capturer également le verso, puis « Vérifier le document ».</p><h4>Étape 4 — Convertir la SIM</h4><p>Après validation, la SIM est convertie en eSIM et un QR Code est généré.</p><div class="box warning"><strong>⚠️ Important :</strong> enregistrer ou capturer le QR Code avec un autre téléphone avant de quitter MyMTN. Sans ce QR Code, l’activation ne pourra pas être effectuée.</div><h4>Étape 5 — Activer l’eSIM</h4><p><strong>Paramètres → Ajouter une eSIM → Scanner le QR Code</strong>.</p></div>
+
+<div class="procedure"><h3>💸 P2C — Transfert vers un non-abonné Mobile Money</h3><p>Le P2C permet d’envoyer de l’argent à une personne non abonnée à Mobile Money. Les fonds sont envoyés sur le numéro du bénéficiaire et non sur un compte MoMo.</p><h4>Après le transfert</h4><p>L’expéditeur reçoit un <strong>code à 12 chiffres</strong> à communiquer au bénéficiaire avec le <strong>code secret à 4 chiffres</strong>. Le bénéficiaire se rend auprès d’un marchand ou d’une agence MTN avec sa pièce d’identité valide et les informations de transaction.</p><h4>Annulation</h4><p>Depuis le numéro ayant réalisé l’envoi : <span class="ussd">*880#</span> → <strong>1</strong> → <strong>4</strong> → <strong>1</strong>.</p><div class="box warning"><strong>À noter :</strong> seul le montant transféré est remboursé ; les frais de transfert ne sont pas récupérables.</div><h4>Grille tarifaire P2C</h4><div class="table-wrap"><table><thead><tr><th>Montant transféré (XOF)</th><th>Frais (XOF)</th></tr></thead><tbody>
+<tr><td>5 000</td><td>500</td></tr><tr><td>5 001 – 20 000</td><td>800</td></tr><tr><td>20 001 – 50 000</td><td>1 500</td></tr><tr><td>50 001 – 75 000</td><td>2 000</td></tr><tr><td>75 001 – 100 000</td><td>2 500</td></tr><tr><td>100 001 – 200 000</td><td>4 000</td></tr><tr><td>200 001 – 300 000</td><td>4 500</td></tr><tr><td>300 001 – 400 000</td><td>5 000</td></tr><tr><td>400 001 – 500 000</td><td>5 000</td></tr><tr><td>500 001 – 750 000</td><td>9 500</td></tr><tr><td>750 001 – 1 000 000</td><td>11 000</td></tr><tr><td>1 000 001 – 1 500 000</td><td>13 000</td></tr><tr><td>1 500 001 – 2 000 000</td><td>16 000</td></tr>
+</tbody></table></div><p class="box info"><strong>En cas de difficulté :</strong> contacter le service clientèle pour connaître la procédure applicable.</p></div>
+</section>
+
+<!-- GLOSSAIRE -->
 
         <section id="glossaire" class="section">
 
