@@ -841,6 +841,80 @@ footer p{
 @media(max-width:700px){.topbar-mtn-logo{width:40px;height:40px}.hot-news{height:44px}.hot-news-label{min-width:105px;font-size:11px;padding:0 12px}.hot-news-item{font-size:12px}}
 
 </style>
+
+<style id="guide-ai-css">
+/* ===== ASSISTANT IA — GUIDE MTN ===== */
+.ai-fab{
+    position:fixed;right:24px;bottom:24px;width:64px;height:64px;border-radius:50%;
+    border:0;background:#0072bc;color:#fff;cursor:pointer;z-index:3000;
+    box-shadow:0 8px 24px rgba(0,0,0,.24);font-size:29px;
+    display:flex;align-items:center;justify-content:center;
+    transition:.2s;
+}
+.ai-fab:hover{transform:scale(1.06);box-shadow:0 10px 28px rgba(0,0,0,.30)}
+.ai-fab .ai-dot{
+    position:absolute;right:2px;top:2px;width:13px;height:13px;
+    background:#FFCC08;border:2px solid #fff;border-radius:50%;
+}
+.ai-chat{
+    position:fixed;right:24px;bottom:100px;width:390px;max-width:calc(100vw - 30px);
+    height:590px;max-height:calc(100vh - 125px);background:#fff;border:1px solid #e4e7ec;
+    border-radius:18px;z-index:2999;display:none;overflow:hidden;
+    box-shadow:0 18px 55px rgba(0,0,0,.22);font-family:'Montserrat',Arial,sans-serif;
+}
+.ai-chat.open{display:flex;flex-direction:column}
+.ai-head{
+    background:linear-gradient(135deg,#003E85,#0072bc);color:#fff;padding:15px 16px;
+    display:flex;align-items:center;gap:11px;border-bottom:4px solid #FFCC08;
+}
+.ai-avatar{
+    width:40px;height:40px;border-radius:50%;background:#fff;color:#0072bc;
+    display:flex;align-items:center;justify-content:center;font-size:21px;flex-shrink:0;
+}
+.ai-head-text{flex:1}
+.ai-head-title{font-size:14px;font-weight:800}
+.ai-head-sub{font-size:10px;opacity:.86;margin-top:2px}
+.ai-close{background:transparent;border:0;color:#fff;font-size:24px;cursor:pointer;line-height:1}
+.ai-messages{
+    flex:1;overflow-y:auto;padding:16px;background:#f5f7fa;
+}
+.ai-msg{max-width:88%;padding:11px 13px;border-radius:14px;margin-bottom:10px;font-size:12px;line-height:1.55}
+.ai-msg.bot{background:#fff;border:1px solid #e4e7ec;border-top-left-radius:4px;color:#344054}
+.ai-msg.user{margin-left:auto;background:#0072bc;color:#fff;border-top-right-radius:4px}
+.ai-msg strong{color:#003E85}
+.ai-msg.user strong{color:#fff}
+.ai-msg ul,.ai-msg ol{margin:6px 0 6px 18px}
+.ai-msg li{margin-bottom:3px}
+.ai-source{
+    margin-top:9px;padding-top:8px;border-top:1px solid #e4e7ec;
+    font-size:10px;color:#667085;
+}
+.ai-suggestions{display:flex;gap:6px;flex-wrap:wrap;padding:9px 12px;background:#fff;border-top:1px solid #e4e7ec}
+.ai-suggestion{
+    border:1px solid #d7e8ff;background:#eaf3ff;color:#003E85;border-radius:16px;
+    padding:6px 9px;font-size:10px;cursor:pointer;
+}
+.ai-input-row{display:flex;gap:8px;padding:11px;background:#fff;border-top:1px solid #e4e7ec}
+.ai-input{
+    flex:1;border:1px solid #d0d5dd;border-radius:12px;padding:11px 12px;
+    outline:none;font-family:inherit;font-size:12px;resize:none;height:43px;
+}
+.ai-input:focus{border-color:#0072bc;box-shadow:0 0 0 3px rgba(0,114,188,.10)}
+.ai-send{
+    width:43px;height:43px;border:0;border-radius:12px;background:#0072bc;color:#fff;
+    cursor:pointer;font-size:17px;font-weight:800;
+}
+.ai-copy{
+    display:inline-block;margin-top:8px;padding:5px 8px;border:1px solid #d0d5dd;
+    background:#fff;border-radius:6px;font-size:10px;cursor:pointer;color:#344054;
+}
+.ai-thinking{opacity:.65;font-style:italic}
+@media(max-width:600px){
+    .ai-fab{right:15px;bottom:15px}
+    .ai-chat{right:15px;bottom:88px;width:calc(100vw - 30px);height:calc(100vh - 110px)}
+}
+</style>
+
 </head>
 
 <body>
@@ -2845,6 +2919,151 @@ footer p{
 <h3 class="subheading">💸 P2C — Transfert vers un non-abonné Mobile Money</h3><p>Le P2C permet d’envoyer de l’argent à une personne non abonnée à Mobile Money. Les fonds sont envoyés sur le numéro du bénéficiaire et non sur un compte MoMo.</p><h4>Après le transfert</h4><p>L’expéditeur reçoit un <strong>code à 12 chiffres</strong> à communiquer au bénéficiaire avec le <strong>code secret à 4 chiffres</strong>. Le bénéficiaire se rend auprès d’un marchand ou d’une agence MTN avec sa pièce d’identité valide et les informations de transaction.</p><h4>Annulation</h4><p>Depuis le numéro ayant réalisé l’envoi : <span class="ussd">*880#</span> → <strong>1</strong> → <strong>4</strong> → <strong>1</strong>.</p><div class="box warning"><strong>À noter :</strong> seul le montant transféré est remboursé ; les frais de transfert ne sont pas récupérables.</div><h4>Grille tarifaire P2C</h4><div class="table-wrap"><table><thead><tr><th>Montant transféré (XOF)</th><th>Frais (XOF)</th></tr></thead><tbody>
 <tr><td>5 000</td><td>500</td></tr><tr><td>5 001 – 20 000</td><td>800</td></tr><tr><td>20 001 – 50 000</td><td>1 500</td></tr><tr><td>50 001 – 75 000</td><td>2 000</td></tr><tr><td>75 001 – 100 000</td><td>2 500</td></tr><tr><td>100 001 – 200 000</td><td>4 000</td></tr><tr><td>200 001 – 300 000</td><td>4 500</td></tr><tr><td>300 001 – 400 000</td><td>5 000</td></tr><tr><td>400 001 – 500 000</td><td>5 000</td></tr><tr><td>500 001 – 750 000</td><td>9 500</td></tr><tr><td>750 001 – 1 000 000</td><td>11 000</td></tr><tr><td>1 000 001 – 1 500 000</td><td>13 000</td></tr><tr><td>1 500 001 – 2 000 000</td><td>16 000</td></tr>
 </tbody></table></div><p class="box info"><strong>En cas de difficulté :</strong> contacter le service clientèle pour connaître la procédure applicable.</p></div>
+
+<!-- ===== AJOUTS APRÈS P2C ===== -->
+
+<div class="procedure">
+    <h3 class="subheading">💳 Carte Virtuelle MoMo</h3>
+
+    <p>La <strong>Carte Virtuelle MoMo</strong> est une carte prépayée <strong>100 % digitale</strong>, liée à votre compte MoMo. Elle vous permet d’effectuer des paiements en ligne (Netflix, Amazon, Play Store, etc.) sans carte physique.</p>
+
+    <h4>Création via USSD :</h4>
+    <ol>
+        <li>Composez <strong>*880#</strong>.</li>
+        <li>Sélectionnez <strong>MoMoPay</strong>.</li>
+        <li>Allez dans <strong>Services en ligne</strong>.</li>
+        <li>Sélectionnez <strong>Carte Virtuelle</strong>.</li>
+        <li>Choisissez <strong>Carte Virtuelle MoMo</strong>.</li>
+        <li>Cliquez sur <strong>Créer carte</strong>.</li>
+        <li>Saisissez votre <strong>PIN MoMo</strong> pour valider.</li>
+    </ol>
+
+    <p>Vous pouvez créer votre carte en composant directement le <strong>short code *880*281#</strong>, puis :</p>
+    <ul>
+        <li>Répondez <strong>1</strong>.</li>
+        <li>Suivez les instructions affichées à l’écran.</li>
+        <li>Saisissez votre <strong>PIN MoMo</strong> pour valider la création.</li>
+    </ul>
+
+    <p>👉 Une confirmation par SMS vous sera envoyée après la création.</p>
+
+    <h4>Création via l’application MoMo :</h4>
+    <p>Téléchargez l’application et activez votre carte en quelques clics :</p>
+    <ul>
+        <li>Android : <a href="https://play.google.com/store/apps/details" target="_blank" rel="noopener">https://play.google.com/store/apps/details</a></li>
+        <li>iPhone : <a href="https://apps.apple.com/us/app/mymomo-new/id6532622230" target="_blank" rel="noopener"><strong>https://apps.apple.com/us/app/mymomo-new/id6532622230</strong></a></li>
+    </ul>
+
+    <h4>Informations utiles :</h4>
+    <ul>
+        <li>💳 <strong>Carte physique :</strong> non disponible, la carte est exclusivement digitale.</li>
+        <li><strong>Nombre de cartes :</strong> une seule carte par compte MoMo.</li>
+        <li><strong>Coût :</strong> 500 FCFA.</li>
+        <li><strong>Validité :</strong> 12 mois.</li>
+        <li><strong>Frais de transaction :</strong> des frais peuvent s’appliquer.</li>
+        <li><strong>Rechargement :</strong> 0,5 % de frais lors du rechargement depuis le compte MoMo.</li>
+        <li><strong>Devise :</strong> la carte ne dispose pas d’une devise étrangère propre. Pour un achat en dollars, il suffit de disposer de l’équivalent en FCFA sur la carte ; la conversion est effectuée automatiquement.</li>
+    </ul>
+</div>
+
+<div class="procedure">
+    <h3 class="subheading">📺 CANAL+</h3>
+
+    <p>M. xxx, vous trouverez ci-dessous, les différentes étapes du processus de réabonnement CANAL+ par Mobile Money et le prix des formules. Pour reconduire votre abonnement CANAL+ par Mobile Money, il vous suffit de lancer comme un appel le code <strong>*880#</strong> et vous choisissez le chiffre 5 “MoMo Pay“ ensuite le 5 « CANAL+ ». Vous trouverez ci-dessous, les différentes étapes du processus de réabonnement CANAL+ par Mobile Money.</p>
+
+    <p><strong>Bienvenue sur MTN Mobile Money.</strong> 1 - Transfert d’argent 2 – MoMo Pay 3 – Credit/forfait 4 - Solde 5 – Epargne/Pret 6 - Mon Compte 7- Services Financiers 8 - Mes Validations</p>
+    <p><strong>Choisissez votre opération.</strong> 2 : MoMo Pay » » » » ensuite 5 : CANAL+</p>
+    <p><strong>Info</strong> 1) Renouveler l’offre 2) Changer l’offre 3) Mémoriser la carte 4) Consulter et régler un impayé</p>
+    <p><strong>Choisissez le 2.</strong> 1) Sélection carte 2) Saisie numéro carte</p>
+    <p><strong>Saisissez votre numéro de carte (14 chiffres)</strong></p>
+    <p><strong>Sélectionnez la formule de votre choix.</strong> Formule : 1) EVASION + 2) ACCESS+ 3) EVASION 4) ACCESS 5) TOUT CANAL+ 6) KWABO+</p>
+    <p><strong>Sélectionnez une option, si besoin.</strong> Options : 1) PAS D'OPTIONS 2) CHARME 3) ENGLISH PLUS 4) NETFLIX 1S</p>
+    <p><strong>Définissez la durée de votre abonnement.</strong> Durée : 1) 1 mois 2) 3 mois</p>
+    <p><strong>Vérifiez le coût de l’opération puis confirmez votre choix.</strong> Pour reconduire votre abonnement vous devez payer XX XXX FCFA. Confirmer : 1. Oui 2. Non</p>
+    <p><strong>Saisissez votre code PIN MM.</strong></p>
+    <p><strong>Push message :</strong> Veuillez saisir votre code PIN pour la liste de vos approbations. NB: si vous ne recevez pas ce Push message, tapez <strong>*880#</strong> Ensuite 8 et vous insérez votre code pin MM</p>
+    <p><strong>Souhaitez-vous approuver cette transaction ?</strong> 1) Oui 2) Non</p>
+    <p><strong>Message de validation.</strong> Paiement effectué pour XXXXX FCFA à Canal+ MFS Solde de votre compte : XX FCFA Référence:</p>
+
+    <h4>FORMULES BOUQUETS CANAL + :</h4>
+    <ul>
+        <li><strong>TOUT CANAL+ :</strong> 350 chaînes, radios et services à 25 000 FCFA/mois.</li>
+        <li><strong>EVASION + :</strong> 320 chaînes, radios et services à 20 000 FCFA/mois.</li>
+        <li><strong>ACCESS+ :</strong> 280 chaînes, radios et services à 15 000 FCFA/mois.</li>
+        <li><strong>ÉVASION :</strong> 300 chaînes, radios et services à 10 000 FCFA/mois.</li>
+        <li><strong>ACCESS :</strong> 260 chaînes, radios et services à 5 000 FCFA/MOIS.</li>
+        <li><strong>KWABO :</strong> 250 chaînes, radios et services à 2500 FCFA/MOIS.</li>
+    </ul>
+</div>
+
+<div class="procedure">
+    <h3 class="subheading">📺 MTN CANAL+</h3>
+
+    <p>Merci de noter que vous n'avez pas à avoir un abonnement sur votre décodeur canal plus pour bénéficier du service. MTN CANAL+ est une offre qui permet à nos abonnés d’accéder à tous les bouquets Canal+ à un tarif réduit, grâce à une activation simple via USSD, directement depuis leur téléphone. Cette offre est accessible à tous, qu'ils possèdent ou non un décodeur et un abonnement résidentiel.</p>
+
+    <p>Ainsi l’abonné via <strong>*750*20#</strong> pourra accéder directement aux bouquets Canal+ : • Access, • Evasion, • Access+, • Evasion+, • Tout CANAL+.</p>
+
+    <p>Pour activer le service, il vous suffit de composer le code <strong>*750*20#</strong> sur son téléphone. Vous recevez un menu affichant les différentes offres Canal+. Vous sélectionnez le bouquet de son choix. Vous avez la possibilité d'activer le bouquet par compte principal (compte crédit) ou compte momo.</p>
+
+    <p>Les abonnements Canal+ offrent différentes formules selon la durée de validité et le bouquet choisi.</p>
+
+    <h4>Offres avec une validité de 24 heures</h4>
+    <ul>
+        <li><strong>Access :</strong> 300 FCFA pour 3 heures de visualisation (sans toucher au forfait internet).</li>
+        <li><strong>Évasion :</strong> 600 FCFA pour 3 heures de visualisation (sans toucher au forfait internet).</li>
+        <li><strong>Access+ :</strong> 1 200 FCFA pour 3 heures de visualisation (sans toucher au forfait internet).</li>
+        <li><strong>Évasion+ :</strong> 1 800 FCFA pour 3 heures de visualisation (sans toucher au forfait internet).</li>
+        <li><strong>Tout CANAL+ :</strong> 4 000 FCFA pour 3 heures de visualisation (sans toucher au forfait internet).</li>
+    </ul>
+
+    <h4>Offres avec une validité de 7 jours</h4>
+    <ul>
+        <li><strong>Access :</strong> 2 000 FCFA pour 14 heures de visualisation (sans toucher au forfait internet).</li>
+        <li><strong>Évasion :</strong> 4 000 FCFA pour 14 heures de visualisation (sans toucher au forfait internet).</li>
+        <li><strong>Access+ :</strong> 6 000 FCFA pour 14 heures de visualisation (sans toucher au forfait internet).</li>
+        <li><strong>Évasion+ :</strong> 8 000 FCFA pour 14 heures de visualisation (sans toucher au forfait internet).</li>
+        <li><strong>Tout CANAL+ :</strong> 14 000 FCFA pour 14 heures de visualisation (sans toucher au forfait internet).</li>
+    </ul>
+
+    <p>Une fois le service activé, vous recevez un SMS contenant :</p>
+    <ul>
+        <li>Un lien d’accès.</li>
+        <li>Votre code de réabonnement virtuel.</li>
+        <li>Vous cliquez sur le lien reçu dans le SMS.</li>
+    </ul>
+
+    <p><strong>Deux cas sont possibles :</strong></p>
+    <ul>
+        <li>Si vous possédez déjà un compte, je vous invite à vous connecter directement.</li>
+        <li>Si vous n'en avez pas encore de compte, merci d'en créer un.</li>
+    </ul>
+
+    <p>Lors de la création du compte, vous renseignez :</p>
+    <ul>
+        <li>Le numéro de téléphone utilisé pour activer le service.</li>
+        <li>Un mot de passe de votre choix.</li>
+        <li>Votre code de réabonnement virtuel reçu par SMS.</li>
+    </ul>
+
+    <p>Une fois votre compte créé et vos informations validées, vous accédez à son bouquet Canal+ et pouvez profiter du service.</p>
+</div>
+
+<div class="procedure">
+    <h3 class="subheading">💼 COMMISSIONS</h3>
+    <p>Je vous informe que les commissions des marchands pour les transactions basiques est de <strong>0.44% TTC plafonné à 2,200 XOF</strong>. En ce qui concerne les opérations de retrait d'argent, la commission est de <strong>50% des frais TTC</strong>. Pour les opérations de paiement SBEE / SONEB la commission est de <strong>0.5% TTC plafonné à 2,500 XOF</strong>, et <strong>1% TTC plafonné à 5,000 XOF</strong> pour les opérations de réabonnement canal +.</p>
+</div>
+
+<div class="procedure">
+    <h3 class="subheading">🔌 MTN Mobile Money API</h3>
+
+    <p>L’<strong>API MTN Mobile Money</strong> permet aux marchands d’intégrer le paiement Mobile Money directement sur leur <strong>site web ou leur application</strong>, afin de permettre à leurs clients d’acheter facilement des biens et services en ligne, tout en bénéficiant de la <strong>fiabilité, de la simplicité et de la sécurité de MTN Mobile Money</strong>.</p>
+
+    <p>Grâce à cette solution, vous pouvez offrir à vos utilisateurs une expérience de paiement <strong>rapide, fluide et sécurisée</strong>, avec une intégration réalisée à partir de quelques lignes de code.</p>
+
+    <p>📄 <strong>Documentation technique :</strong> <a href="https://www.mtn.bj/momo/developpeurs/momo-api/" target="_blank" rel="noopener"><strong>https://www.mtn.bj/momo/developpeurs/momo-api/</strong></a></p>
+    <p>📞 <strong>Pour plus d’informations :</strong><br><strong>0197979926 / 0197972164</strong></p>
+</div>
+
 </section>
 
 <!-- GLOSSAIRE -->
@@ -3128,6 +3347,201 @@ document.addEventListener("DOMContentLoaded", function(){
         });
     }
 });
+</script>
+
+
+<!-- ===== ASSISTANT IA DU GUIDE ===== -->
+<button class="ai-fab" id="aiFab" onclick="toggleGuideAI()" aria-label="Ouvrir l'assistant">
+    💬<span class="ai-dot"></span>
+</button>
+
+<div class="ai-chat" id="guideAI" aria-label="GUIDE INTREPIDE">
+    <div class="ai-head">
+        <div class="ai-avatar">🤖</div>
+        <div class="ai-head-text">
+            <div class="ai-head-title">GUIDE INTREPIDE</div>
+            <div class="ai-head-sub">Réponses basées sur le contenu du guide</div>
+        </div>
+        <button class="ai-close" onclick="toggleGuideAI()" aria-label="Fermer">×</button>
+    </div>
+
+    <div class="ai-messages" id="aiMessages">
+        <div class="ai-msg bot">
+            <strong>Bonjour 👋</strong><br>
+            Je suis GUIDE INTREPIDE, votre assistant du Guide Opérationnel MTN. Posez-moi une question sur une offre,
+            une procédure, MoMo, le roaming, les forfaits ou la prise en charge client.
+            <div class="ai-source">ℹ️ Cette première version fonctionne sans serveur : elle recherche et reformule les informations présentes dans ce guide.</div>
+        </div>
+    </div>
+
+    <div class="ai-suggestions">
+        <button class="ai-suggestion" onclick="askGuideAI('C’est quoi le cashback ?')">💰 C’est quoi le cashback ?</button>
+        <button class="ai-suggestion" onclick="askGuideAI('Comment fonctionne MoMoKash ?')">💳 MoMoKash</button>
+        <button class="ai-suggestion" onclick="askGuideAI('Comment activer un forfait internet ?')">🌐 Forfait internet</button>
+        <button class="ai-suggestion" onclick="askGuideAI('Que faire si le client est mécontent ?')">☎️ Client mécontent</button>
+    </div>
+
+    <div class="ai-input-row">
+        <textarea id="aiInput" class="ai-input" placeholder="Ex. : C’est quoi le cashback ?" onkeydown="guideAIKey(event)"></textarea>
+        <button class="ai-send" onclick="sendGuideAI()" aria-label="Envoyer">➤</button>
+    </div>
+</div>
+
+
+<script id="guide-ai-js">
+(function(){
+    const normalize = s => (s || '')
+        .toLowerCase()
+        .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+        .replace(/[’']/g,"'")
+        .replace(/\s+/g,' ').trim();
+
+    const escapeHTML = s => String(s || '').replace(/[&<>"']/g, c => ({
+        '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'
+    }[c]));
+
+    const cleanText = el => (el.innerText || el.textContent || '')
+        .replace(/\s+/g,' ').trim();
+
+    window.toggleGuideAI = function(){
+        document.getElementById('guideAI').classList.toggle('open');
+        if(document.getElementById('guideAI').classList.contains('open')){
+            setTimeout(()=>document.getElementById('aiInput').focus(),100);
+        }
+    };
+
+    window.guideAIKey = function(e){
+        if(e.key === 'Enter' && !e.shiftKey){
+            e.preventDefault();
+            sendGuideAI();
+        }
+    };
+
+    window.sendGuideAI = function(){
+        const input = document.getElementById('aiInput');
+        const q = input.value.trim();
+        if(!q) return;
+        input.value='';
+        askGuideAI(q);
+    };
+
+    window.askGuideAI = function(q){
+        addMsg('user', escapeHTML(q));
+        const thinking = document.createElement('div');
+        thinking.className='ai-msg bot ai-thinking';
+        thinking.id='aiThinking';
+        thinking.textContent='Recherche dans le guide…';
+        document.getElementById('aiMessages').appendChild(thinking);
+        scrollAI();
+
+        setTimeout(()=>{
+            const t = document.getElementById('aiThinking');
+            if(t) t.remove();
+            const answer = buildGuideAnswer(q);
+            addMsg('bot', answer);
+        }, 220);
+    };
+
+    function addMsg(type, html){
+        const box=document.createElement('div');
+        box.className='ai-msg '+type;
+        box.innerHTML=html;
+        document.getElementById('aiMessages').appendChild(box);
+        scrollAI();
+    }
+
+    function scrollAI(){
+        const m=document.getElementById('aiMessages');
+        m.scrollTop=m.scrollHeight;
+    }
+
+    function getRelevantBlocks(query){
+        const root=document.querySelector('main') || document.body;
+        const blocks=[...root.querySelectorAll('.procedure,.faq,.script,.box,.card')];
+        const q=normalize(query);
+        const words=q.split(/[^a-z0-9à-ÿ]+/).filter(w=>w.length>=3);
+
+        return blocks.map((el,idx)=>{
+            const text=cleanText(el);
+            const n=normalize(text);
+            if(!text || n.length<30) return null;
+
+            let score=0;
+            words.forEach(w=>{
+                if(n.includes(w)) score += n.split(w).length-1;
+            });
+
+            // Bonus pour les titres et réponses FAQ
+            const title=el.querySelector('h3,h4,.faq-question,.script-label');
+            if(title){
+                const nt=normalize(cleanText(title));
+                words.forEach(w=>{ if(nt.includes(w)) score += 5; });
+            }
+            return {el,text,score,idx};
+        }).filter(Boolean).filter(x=>x.score>0)
+          .sort((a,b)=>b.score-a.score || a.idx-b.idx);
+    }
+
+    function buildGuideAnswer(query){
+        const q=normalize(query);
+
+        // Réponse spécialisée : CASHBACK, directement issue du GUIDE.
+        if(q.includes('cashback') || q.includes('bonus') && (q.includes('forfait') || q.includes('momo'))){
+            return `
+                <strong>💰 Cashback ciblé sur les forfaits</strong>
+                <p>Le guide indique qu’une campagne de <strong>Cashback de 10 %</strong> est en cours dans le cadre de la réactivation des clients MoMo.</p>
+                <ul>
+                    <li>🎯 Le bonus concerne les clients ciblés comme <strong>inactifs sur MoMo depuis au moins 45 jours</strong>.</li>
+                    <li>📱 Le client doit avoir activé un <strong>forfait via MoMo</strong>.</li>
+                    <li>💰 Le cashback correspond à <strong>10 % du montant du forfait</strong>, avec un plafond de <strong>100 FCFA</strong>.</li>
+                    <li>❌ Les achats de crédit simple (airtime) ne sont pas concernés.</li>
+                </ul>
+                <div class="ai-source"><strong>Formulation client :</strong><br>
+                « Cette offre de cashback est réservée aux clients éligibles à la campagne. Si vous avez été ciblé et avez activé un forfait via MoMo, vous bénéficiez de 10 % du montant du forfait, dans la limite de 100 FCFA. Les achats de crédit simple ne sont pas concernés. Nous allons vérifier votre situation afin de vous apporter la meilleure assistance. »
+                <br><button class="ai-copy" onclick="copyAI(this)">📋 Copier la réponse</button></div>
+            `;
+        }
+
+        const results=getRelevantBlocks(query).slice(0,3);
+
+        if(!results.length){
+            return `
+                <strong>Je n’ai pas trouvé une réponse suffisamment précise dans le guide.</strong>
+                <p>Essayez avec des mots-clés plus précis, par exemple : <em>cashback, MoMoKash, forfait internet, roaming, transfert, Reset PIN, PUK, réclamation</em>.</p>
+                <div class="ai-source">⚠️ Pour cette version, je préfère ne pas inventer une information qui n’est pas retrouvée dans le guide.</div>
+            `;
+        }
+
+        const best=results[0];
+        let text=best.text;
+        if(text.length>900) text=text.slice(0,900)+'…';
+
+        // Formalisation légère de la réponse
+        let title=best.el.querySelector('h3,h4,.faq-question,.script-label');
+        title=title ? cleanText(title) : 'Information trouvée dans le guide';
+
+        let html=`<strong>📌 ${escapeHTML(title)}</strong><p>${escapeHTML(text)}</p>`;
+
+        if(results.length>1){
+            html+=`<div class="ai-source"><strong>Autres informations pertinentes :</strong>`;
+            results.slice(1,3).forEach(r=>{
+                let t=r.el.querySelector('h3,h4,.faq-question,.script-label');
+                html+=`<br>• ${escapeHTML(t ? cleanText(t) : r.text.slice(0,120))}`;
+            });
+            html+=`</div>`;
+        }
+        return html;
+    }
+
+    window.copyAI=function(btn){
+        const parent=btn.parentElement;
+        const text=parent.innerText.replace('📋 Copier la réponse','').trim();
+        navigator.clipboard?.writeText(text).then(()=>{
+            btn.textContent='✅ Copié';
+            setTimeout(()=>btn.textContent='📋 Copier la réponse',1500);
+        }).catch(()=>{});
+    };
+})();
 </script>
 
 </body>
