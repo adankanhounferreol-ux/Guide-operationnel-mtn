@@ -918,11 +918,180 @@ footer p{
     .ai-fab{right:15px;bottom:15px}
     .ai-chat{right:15px;bottom:88px;width:calc(100vw - 30px);height:calc(100vh - 110px)}
 }
+
+/* ===== PORTAIL D'ACCÈS ===== */
+html.mtn-locked, html.mtn-locked body{overflow:hidden;height:100%}
+#mtn-login-gate{
+    position:fixed;inset:0;z-index:99999;
+    display:flex;align-items:center;justify-content:center;
+    background:
+        radial-gradient(circle at 12% 10%, rgba(255,204,8,.55), transparent 42%),
+        radial-gradient(circle at 90% 88%, rgba(255,204,8,.35), transparent 40%),
+        linear-gradient(135deg,#003E85 0%, #0F5CB8 35%, #1F7AE0 55%, #003E85 80%, #002559 100%);
+    font-family:'Montserrat',sans-serif;
+    padding:20px;
+}
+#mtn-login-gate .mtn-login-card{
+    width:100%;max-width:340px;
+    background:#ffffff;
+    border-radius:18px;
+    padding:36px 32px 28px;
+    box-shadow:0 25px 60px rgba(0,20,60,.35);
+    border-top:5px solid #FFCC08;
+    animation:mtnGateIn .35s ease;
+}
+@keyframes mtnGateIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+
+#mtn-login-gate .mtn-gate-badge{
+    width:52px;height:52px;border-radius:50%;
+    background:#FFCC08;
+    display:flex;align-items:center;justify-content:center;
+    font-size:24px;margin:0 auto 14px;
+    box-shadow:0 6px 16px rgba(255,204,8,.45);
+}
+#mtn-login-gate .mtn-gate-title{
+    text-align:center;color:#003E85;font-size:1.05rem;font-weight:800;
+    margin-bottom:2px;
+}
+#mtn-login-gate .mtn-gate-sub{
+    text-align:center;color:#667085;font-size:.78rem;
+    margin-bottom:24px;
+}
+
+#mtn-login-gate label{
+    display:block;text-align:left;color:#344054;font-size:.8rem;font-weight:700;
+    margin:0 0 7px;
+}
+#mtn-login-gate .mtn-field{position:relative;margin-bottom:18px}
+#mtn-login-gate input{
+    width:100%;box-sizing:border-box;
+    background:#f5f7fa;border:1.5px solid #e4e7ec;color:#1a1a1a;
+    border-radius:9px;padding:12px 14px;font-size:.9rem;
+    outline:none;
+    transition:border-color .15s, background .15s;
+    font-family:'Montserrat',sans-serif;
+}
+#mtn-login-gate input:focus{border-color:#3F8FED;background:#fff;box-shadow:0 0 0 3px rgba(63,143,237,.15)}
+#mtn-login-gate .mtn-field input[type="password"],
+#mtn-login-gate .mtn-field input[type="text"].mtn-pass-visible{
+    padding-right:40px;
+}
+#mtn-login-gate .mtn-eye{
+    position:absolute;right:12px;top:50%;transform:translateY(-50%);
+    cursor:pointer;color:#98a2b3;display:flex;align-items:center;
+    user-select:none;
+}
+#mtn-login-gate .mtn-eye:hover{color:#003E85}
+#mtn-login-gate button{
+    width:100%;background:#FFCC08;color:#003E85;border:none;
+    border-radius:9px;padding:13px;font-weight:800;font-size:.92rem;
+    letter-spacing:.3px;
+    cursor:pointer;transition:background .15s, transform .1s;
+    font-family:'Montserrat',sans-serif;
+    margin-bottom:18px;
+}
+#mtn-login-gate button:hover{background:#f0c300}
+#mtn-login-gate button:active{background:#e0b600;transform:scale(.99)}
+#mtn-login-gate .mtn-login-error{
+    display:none;color:#d63031;background:#fff0f0;
+    border:1px solid rgba(214,48,49,.3);border-radius:8px;
+    padding:9px 11px;font-size:.78rem;margin-bottom:16px;text-align:left;
+    font-weight:600;
+}
+#mtn-login-gate .mtn-login-error.show{display:block}
+#mtn-login-gate .mtn-lang{
+    position:relative;
+}
+#mtn-login-gate select{
+    width:100%;box-sizing:border-box;appearance:none;-webkit-appearance:none;-moz-appearance:none;
+    background:#f5f7fa;border:1.5px solid #e4e7ec;color:#667085;
+    border-radius:9px;padding:11px 32px 11px 14px;font-size:.82rem;
+    outline:none;cursor:pointer;font-family:'Montserrat',sans-serif;
+}
+#mtn-login-gate .mtn-lang::after{
+    content:"";position:absolute;right:14px;top:50%;
+    width:8px;height:8px;border-right:2px solid #98a2b3;border-bottom:2px solid #98a2b3;
+    transform:translateY(-65%) rotate(45deg);pointer-events:none;
+}
+#mtn-login-gate .mtn-gate-footer{
+    text-align:center;color:#98a2b3;font-size:.68rem;margin-top:16px;
+}
 </style>
 
 </head>
 
 <body>
+
+<!-- =========================
+     PORTAIL D'ACCÈS
+========================= -->
+<div id="mtn-login-gate">
+    <div class="mtn-login-card">
+        <div class="mtn-gate-badge">📶</div>
+        <div class="mtn-gate-title">Guide Opérationnel MTN</div>
+        <div class="mtn-gate-sub">Accès réservé au personnel de Palladium Africa</div>
+
+        <form id="mtn-login-form" autocomplete="off">
+            <div class="mtn-login-error" id="mtn-login-error">Identifiants incorrects. Veuillez réessayer.</div>
+
+            <label for="mtn-login-user">Nom d'utilisateur</label>
+            <div class="mtn-field">
+                <input type="text" id="mtn-login-user" autocomplete="off" placeholder="Entrez votre identifiant">
+            </div>
+
+            <label for="mtn-login-pass">Mot de passe</label>
+            <div class="mtn-field">
+                <input type="password" id="mtn-login-pass" autocomplete="off" placeholder="Entrez votre mot de passe">
+                <span class="mtn-eye" id="mtn-toggle-pass" title="Afficher/masquer">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z"/><circle cx="12" cy="12" r="3"/></svg>
+                </span>
+            </div>
+
+            <button type="submit">Se connecter</button>
+
+            <div class="mtn-lang">
+                <select id="mtn-lang-select">
+                    <option value="fr">Changer de langue</option>
+                    <option value="fr2">Français</option>
+                    <option value="en">English</option>
+                </select>
+            </div>
+        </form>
+
+        <div class="mtn-gate-footer">© INTREPIDE — Documentation interne</div>
+    </div>
+</div>
+
+<script>
+document.documentElement.classList.add('mtn-locked');
+(function(){
+    var GATE_USER = "Guide";
+    var GATE_PASS = "Admin";
+    var gate = document.getElementById('mtn-login-gate');
+    var form = document.getElementById('mtn-login-form');
+    var errorBox = document.getElementById('mtn-login-error');
+    var passInput = document.getElementById('mtn-login-pass');
+    var toggleEye = document.getElementById('mtn-toggle-pass');
+
+    toggleEye.addEventListener('click', function(){
+        passInput.type = passInput.type === 'password' ? 'text' : 'password';
+    });
+
+    form.addEventListener('submit', function(e){
+        e.preventDefault();
+        var u = document.getElementById('mtn-login-user').value.trim();
+        var p = passInput.value;
+        if(u === GATE_USER && p === GATE_PASS){
+            gate.style.display = 'none';
+            document.documentElement.classList.remove('mtn-locked');
+        } else {
+            errorBox.classList.add('show');
+            passInput.value = '';
+        }
+    });
+})();
+</script>
+
 
 <!-- =========================
      SIDEBAR
@@ -2918,6 +3087,28 @@ footer p{
                 <p><strong>Cas de succès :</strong> Une fois la réservation faite, l’abonné qui a reçu les fonds peut approuver la demande en composant : <span class="ussd">*880*56#</span>.</p>
                 <p>L’initiateur du MoMo REVERSAL dispose de 10 jours pour récupérer le montant réservé. Passé ce délai, la somme est automatiquement rétablie sur le compte du receveur.</p>
                 <p><strong>À noter :</strong> Les Marchands et les SIM MoMoPay ne peuvent pas effectuer de SELF MoMo REVERSAL.</p>
+            </div>
+
+            <div class="procedure">
+                <h3 class="subheading">🏦 MoMo Express</h3>
+                <p>Grâce aux partenariats avec les banques <strong>NSIA, UBA, ECOBANK, BOA, LA POSTE, BGFI, CORIS, ORABANK, CCEI</strong>, et <strong>BANQUE ATLANTIQUE</strong>, ainsi qu'avec la microfinance <strong>ALIDe</strong>, MTN MoMo Express vous permet de transférer de l'argent de votre compte bancaire à votre compte MoMo et vice versa.</p>
+
+                <p><strong>⭐ Avantages</strong></p>
+                <ul>
+                    <li>Le Service MoMo Express est rapide et sécurisé.</li>
+                    <li>Les frais liés aux transactions sont très accessibles.</li>
+                    <li>Finies les files d'attente pour retirer de l'argent à la banque.</li>
+                    <li>Plus besoin de vous déplacer pour aller en agence ou vers un guichet automatique. Faites vos transactions sans risque d'insécurité de chez vous.</li>
+                </ul>
+
+                <div class="box info">
+                    MoMo Express s'active dans votre banque. Rendez-vous dans une agence NSIA, UBA, ECOBANK, BOA, BGFI, CORIS, ORABANK, CCEI, BANQUE ATLANTIQUE, ou ALIDe pour activer le service.
+                </div>
+
+                <p><strong>📲 Activation</strong></p>
+                <p>Avec <strong>UBA</strong> et <strong>ORABANK</strong>, vous avez exceptionnellement la possibilité d'activer vous-même le service depuis votre téléphone en tapant <span class="ussd">*880*70*1#</span> pour UBA et sur le menu <span class="ussd">*880#</span> pour ORABANK (puis suivez les instructions).</p>
+                <p>Pour retirer ou envoyer ensuite de l'argent de/vers votre compte, tapez <span class="ussd">*880#</span> puis <strong>7</strong> pour « Services Bancaires » puis choisissez la banque dans laquelle vous voulez opérer votre opération.</p>
+                <p>Vous pouvez aussi effectuer votre opération si vous êtes dans les banques NSIA, UBA et ECOBANK dans MoMo App directement.</p>
             </div>
 
             <div class="procedure">
