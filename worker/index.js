@@ -90,6 +90,7 @@ ${context}
 
       if (!resp.ok) {
         const errText = await resp.text();
+        console.error(`Erreur Gemini (statut ${resp.status}): ${errText}`);
         return json({ error: 'Erreur API IA', detail: errText }, 502);
       }
 
