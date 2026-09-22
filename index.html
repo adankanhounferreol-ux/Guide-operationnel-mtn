@@ -4198,6 +4198,17 @@ function toggleMenu(){
 
 <script id="guide-ai-js">
 (function(){
+    // =====================================================================
+    // CONFIGURATION IA
+    // -----------------------------------------------------------------
+    // Renseignez ici l'URL de votre petit backend (voir cloudflare-worker.js
+    // fourni à côté de ce fichier). Tant que AI_ENDPOINT est vide, le bot
+    // fonctionne uniquement en mode local (recherche + reformulation basique,
+    // sans appel réseau, sans donnée transmise nulle part).
+    const AI_ENDPOINT = 'https://guide-operationnel-mtn.adankanhoun-ferreol.workers.dev';
+    const AI_TIMEOUT_MS = 12000;
+    // =====================================================================
+
     const normalize = s => (s || '')
         .toLowerCase()
         .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
@@ -4210,6 +4221,61 @@ function toggleMenu(){
 
     const cleanText = el => (el.innerText || el.textContent || '')
         .replace(/\s+/g,' ').trim();
+
+    // ---------------------------------------------------------------
+    // Extrait tout le contenu utile du guide, une seule fois, pour
+    // servir de "base de connaissance" à l'IA (pas de base de données :
+    // le guide LUI-MÊME est la source).
+    // ---------------------------------------------------------------
+    let cachedGuideContext = null;
+    function getFullGuideContext(){
+        if(cachedGuideContext) return cachedGuideContext;
+        const root = document.querySelector('main') || document.body;
+        const blocks = [...root.querySelectorAll('.procedure,.faq,.script,.box,.card')];
+        const parts = [];
+        blocks.forEach(el=>{
+            const title = el.querySelector('h3,h4,.faq-question,.script-label');
+            const t = cleanText(el);
+            if(!t || t.length < 20) return;
+            const heading = title ? cleanText(title) : '';
+            parts.push(heading ? `### ${heading}\n${t}` : t);
+        });
+        // Limite de sécurité pour rester dans une fenêtre de contexte raisonnable
+        let ctx = parts.join('\n\n');
+        const MAX_CHARS = 60000;
+        if(ctx.length > MAX_CHARS) ctx = ctx.slice(0, MAX_CHARS) + '\n…(contenu tronqué)';
+        cachedGuideContext = ctx;
+        return ctx;
+    }
+
+    // ---------------------------------------------------------------
+    // Appel au backend IA (si configuré). Le backend reçoit la question
+    // + le contenu du guide, et renvoie une réponse déjà formulée en
+    // langage naturel, fondée UNIQUEMENT sur ce contenu.
+    // ---------------------------------------------------------------
+    async function askAIBackend(question){
+        if(!AI_ENDPOINT) return null;
+        const controller = new AbortController();
+        const timer = setTimeout(()=>controller.abort(), AI_TIMEOUT_MS);
+        try{
+            const res = await fetch(AI_ENDPOINT, {
+                method: 'POST',
+                headers: {'Content-Type':'application/json'},
+                signal: controller.signal,
+                body: JSON.stringify({
+                    question,
+                    context: getFullGuideContext()
+                })
+            });
+            clearTimeout(timer);
+            if(!res.ok) return null;
+            const data = await res.json();
+            return data && data.answer ? data.answer : null;
+        }catch(e){
+            clearTimeout(timer);
+            return null;
+        }
+    }
 
     window.toggleGuideAI = function(){
         document.getElementById('guideAI').classList.toggle('open');
@@ -4233,21 +4299,34 @@ function toggleMenu(){
         askGuideAI(q);
     };
 
-    window.askGuideAI = function(q){
+    window.askGuideAI = async function(q){
         addMsg('user', escapeHTML(q));
         const thinking = document.createElement('div');
         thinking.className='ai-msg bot ai-thinking';
         thinking.id='aiThinking';
-        thinking.textContent='Recherche dans le guide…';
+        thinking.textContent = AI_ENDPOINT ? 'Réflexion en cours…' : 'Recherche dans le guide…';
         document.getElementById('aiMessages').appendChild(thinking);
         scrollAI();
 
-        setTimeout(()=>{
-            const t = document.getElementById('aiThinking');
-            if(t) t.remove();
-            const answer = buildGuideAnswer(q);
-            addMsg('bot', answer);
-        }, 220);
+        // 1) On tente une vraie formulation IA si un backend est configuré
+        let aiAnswer = null;
+        if(AI_ENDPOINT){
+            aiAnswer = await askAIBackend(q);
+        }
+
+        const t = document.getElementById('aiThinking');
+        if(t) t.remove();
+
+        if(aiAnswer){
+            addMsg('bot', escapeHTML(aiAnswer).replace(/\n/g,'<br>') +
+                `<div class="ai-source">🤖 Réponse formulée par l’assistant à partir du guide.
+                <button class="ai-copy" onclick="copyAI(this)">📋 Copier la réponse</button></div>`);
+            return;
+        }
+
+        // 2) Sinon, on retombe sur le moteur local (recherche + reformulation)
+        const answer = buildGuideAnswer(q);
+        addMsg('bot', answer);
     };
 
     function addMsg(type, html){
@@ -4328,7 +4407,10 @@ function toggleMenu(){
         let title=best.el.querySelector('h3,h4,.faq-question,.script-label');
         title=title ? cleanText(title) : 'Information trouvée dans le guide';
 
-        let html=`<strong>📌 ${escapeHTML(title)}</strong><p>${escapeHTML(text)}</p>`;
+        const html_intro = humanizeIntro(query);
+        const body = humanizeBody(text);
+
+        let html=`<strong>📌 ${escapeHTML(title)}</strong><p>${html_intro} ${escapeHTML(body)}</p>`;
 
         if(results.length>1){
             html+=`<div class="ai-source"><strong>Autres informations pertinentes :</strong>`;
@@ -4339,6 +4421,39 @@ function toggleMenu(){
             html+=`</div>`;
         }
         return html;
+    }
+
+    // ---------------------------------------------------------------
+    // Habillage léger des réponses locales : varie les formulations
+    // d'introduction et enchaîne les phrases avec des connecteurs, pour
+    // éviter l'effet "copier-coller brut" du bloc trouvé dans le guide.
+    // (Ce n'est pas de la vraie génération de langage : c'est un moteur
+    // local sans IA — pour une vraie reformulation, voir AI_ENDPOINT.)
+    // ---------------------------------------------------------------
+    function humanizeIntro(query){
+        const intros = [
+            "D’après le guide,",
+            "Selon la procédure en vigueur,",
+            "Voici ce que prévoit le guide sur ce sujet :",
+            "La documentation indique que",
+            "Pour répondre précisément à votre question,"
+        ];
+        let h = 0;
+        for(const c of query) h = (h*31 + c.charCodeAt(0)) % 997;
+        return intros[h % intros.length];
+    }
+
+    function humanizeBody(text){
+        // Découpe en phrases et réinjecte des connecteurs pour fluidifier
+        const sentences = text.split(/(?<=[.!?])\s+/).filter(Boolean);
+        if(sentences.length <= 1) return text;
+        const connectors = ["De plus,", "Par ailleurs,", "Il est aussi précisé que", "Enfin,"];
+        return sentences.map((s,i)=>{
+            if(i===0) return s;
+            const c = connectors[(i-1) % connectors.length];
+            const low = s.charAt(0).toLowerCase() + s.slice(1);
+            return `${c} ${low}`;
+        }).join(' ');
     }
 
     window.copyAI=function(btn){
