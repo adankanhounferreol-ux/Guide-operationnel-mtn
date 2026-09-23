@@ -4199,23 +4199,21 @@ function toggleMenu(){
 <script id="guide-ai-js">
 (function(){
     // =====================================================================
-    // GUIDE INTREPIDE — ARCHITECTURE RETRIEVAL-FIRST
-    // Question -> recherche dans TOUT le guide -> extraits pertinents
-    // -> Worker Cloudflare -> modèle IA
+    // GUIDE INTREPIDE — RETRIEVAL-FIRST V2
     //
-    // IMPORTANT :
-    // La clé API du modèle IA ne doit JAMAIS être placée dans index.html.
-    // Elle reste dans le Worker Cloudflare.
+    // Question -> détection des termes exacts -> bloc(s) prioritaires
+    // -> contexte ciblé -> Cloudflare Worker -> OpenAI
+    //
+    // La clé API reste exclusivement dans Cloudflare.
     // =====================================================================
 
     const AI_ENDPOINT = 'https://guide-operationnel-mtn.adankanhoun-ferreol.workers.dev';
     const AI_TIMEOUT_MS = 15000;
 
-    // Limites de sécurité : on n'envoie plus les 60 000 caractères du guide.
     const MAX_CONTEXT_CHARS = 18000;
     const MAX_BLOCK_CHARS = 9000;
-    const MAX_EXACT_BLOCKS = 4;
-    const MAX_FUZZY_BLOCKS = 4;
+    const MAX_EXACT_BLOCKS = 3;
+    const MAX_FUZZY_BLOCKS = 2;
 
     const normalize = s => (s || '')
         .toLowerCase()
@@ -4233,26 +4231,30 @@ function toggleMenu(){
 
     function getGuideBlocks(){
         const root = document.querySelector('main') || document.body;
-        return [...root.querySelectorAll('.procedure,.faq,.script,.box,.card')]
-            .map((el, idx) => {
-                const text = cleanText(el);
-                if(!text || text.length < 15) return null;
 
-                const titleEl = el.querySelector('h2,h3,h4,.faq-question,.script-label');
-                const title = titleEl ? cleanText(titleEl) : '';
-                const normalized = normalize(text);
-                const normalizedTitle = normalize(title);
+        return [...root.querySelectorAll(
+            '.procedure,.faq,.script,.box,.card'
+        )]
+        .map((el, idx) => {
+            const text = cleanText(el);
+            if(!text || text.length < 15) return null;
 
-                return {
-                    el,
-                    idx,
-                    text,
-                    title,
-                    normalized,
-                    normalizedTitle
-                };
-            })
-            .filter(Boolean);
+            const titleEl = el.querySelector(
+                'h2,h3,h4,.faq-question,.script-label'
+            );
+
+            const title = titleEl ? cleanText(titleEl) : '';
+
+            return {
+                el,
+                idx,
+                text,
+                title,
+                normalized: normalize(text),
+                normalizedTitle: normalize(title)
+            };
+        })
+        .filter(Boolean);
     }
 
     function tokenize(query){
@@ -4261,52 +4263,68 @@ function toggleMenu(){
             .filter(w => w.length >= 2);
     }
 
-    function hasExactTerm(text, query){
-        const q = normalize(query);
+    function exactBoundary(text, term){
+        const t = normalize(text);
+        const q = normalize(term);
+
         if(!q) return false;
 
-        // Pour les acronymes / références courtes : recherche avec frontières.
-        if(q.length <= 8 && !q.includes(' ')){
-            const escaped = q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
-            return new RegExp('(^|[^a-z0-9])' + escaped + '($|[^a-z0-9])','i')
-                .test(normalize(text));
-        }
+        const escaped = q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
 
-        return normalize(text).includes(q);
+        return new RegExp(
+            '(^|[^a-z0-9])' + escaped + '($|[^a-z0-9])',
+            'i'
+        ).test(t);
     }
 
-    function scoreBlock(block, query){
+    /*
+     * Détecte les expressions significatives de la question.
+     *
+     * Exemple :
+     * "C'est quoi P2C et comment fonctionne-t-il ?"
+     * devient notamment :
+     * P2C
+     *
+     * Les mots génériques sont ignorés afin d'éviter que des blocs
+     * comme "MoMo Transactions Informations" passent devant P2C.
+     */
+    function extractSearchTerms(query){
         const q = normalize(query);
-        const words = tokenize(query);
-        let score = 0;
 
-        if(!q) return 0;
+        const stopWords = new Set([
+            'a','au','aux','avec','ce','cela','cette','ces','comment',
+            'dans','de','des','du','en','est','et','faire','fonctionne',
+            'fonctionnement','il','ils','je','la','le','les','ma','me',
+            'mon','ne','nos','notre','nous','on','ou','par','pour',
+            'que','quel','quelle','quels','quelles','qui','quoi','se',
+            'son','sur','ta','te','tes','ton','un','une','vers','vous',
+            'et-il','et-elle'
+        ]);
 
-        // Correspondance exacte de la question complète.
-        if(block.normalized.includes(q)) score += 25;
+        const words = q
+            .split(/[^a-z0-9à-ÿ-]+/)
+            .filter(Boolean)
+            .filter(w => w.length >= 2)
+            .filter(w => !stopWords.has(w));
 
-        // Les termes présents dans le titre sont fortement pondérés.
-        words.forEach(w => {
-            if(block.normalizedTitle.includes(w)) score += 8;
-            if(block.normalized.includes(w)){
-                const occurrences = block.normalized.split(w).length - 1;
-                score += Math.min(occurrences, 6) * 2;
-            }
-        });
+        // Les acronymes / références alphanumériques courtes sont
+        // particulièrement importants : P2C, PUK, PI-SPI, etc.
+        const priority = words.filter(w =>
+            /[0-9]/.test(w) ||
+            /^[a-z]{2,5}$/.test(w)
+        );
 
-        // Bonus lorsque plusieurs mots de la question sont présents.
-        const matched = words.filter(w => block.normalized.includes(w)).length;
-        if(words.length) score += Math.round((matched / words.length) * 10);
-
-        return score;
+        return [...new Set([
+            ...priority,
+            ...words
+        ])];
     }
 
     function trimBlockText(text, maxChars){
         if(text.length <= maxChars) return text;
 
-        // On garde le début du bloc : dans le guide, le titre et les
-        // premières informations sont généralement les plus structurantes.
-        return text.slice(0, maxChars) + '\n[… extrait tronqué …]';
+        return text.slice(0, maxChars) +
+            '\n[… extrait tronqué …]';
     }
 
     function buildContext(blocks){
@@ -4314,14 +4332,25 @@ function toggleMenu(){
         const parts = [];
 
         for(const b of blocks){
-            const body = trimBlockText(b.text, MAX_BLOCK_CHARS);
-            const part = `${b.title ? '### ' + b.title + '\n' : ''}${body}`;
+            const body = trimBlockText(
+                b.text,
+                MAX_BLOCK_CHARS
+            );
+
+            const part =
+                `${b.title ? '### ' + b.title + '\n' : ''}${body}`;
 
             if(total + part.length > MAX_CONTEXT_CHARS){
-                const remaining = MAX_CONTEXT_CHARS - total;
+                const remaining =
+                    MAX_CONTEXT_CHARS - total;
+
                 if(remaining > 300){
-                    parts.push(part.slice(0, remaining) + '\n[… contexte tronqué …]');
+                    parts.push(
+                        part.slice(0, remaining) +
+                        '\n[… contexte tronqué …]'
+                    );
                 }
+
                 break;
             }
 
@@ -4332,239 +4361,519 @@ function toggleMenu(){
         return parts.join('\n\n');
     }
 
-    /*
-     * RETRIEVAL EN 2 NIVEAUX
-     *
-     * 1. Recherche exacte :
-     *    "P2C" doit être recherché dans tout le DOM du guide.
-     *
-     * 2. Recherche lexicale :
-     *    si aucun résultat exact, on cherche les blocs contenant les
-     *    principaux mots de la question.
-     */
+    function scoreBlock(block, query, terms){
+        const q = normalize(query);
+        let score = 0;
+
+        // Question complète.
+        if(block.normalized.includes(q)){
+            score += 30;
+        }
+
+        terms.forEach(term => {
+
+            // Présence exacte dans le titre = très forte priorité.
+            if(exactBoundary(block.title, term)){
+                score += 30;
+            }
+
+            // Présence exacte dans le bloc.
+            if(exactBoundary(block.text, term)){
+                score += 12;
+            }
+
+            // Pour les termes longs, présence simple.
+            if(term.length >= 4 &&
+               block.normalized.includes(term)){
+                score += 4;
+            }
+        });
+
+        return score;
+    }
+
     function retrieveGuideContext(query){
         const blocks = getGuideBlocks();
-        const q = normalize(query);
+        const terms = extractSearchTerms(query);
 
-        if(!q){
+        if(!terms.length){
             return {
                 mode: 'none',
                 blocks: [],
                 context: '',
-                found: false
+                found: false,
+                exactTerm: null
             };
         }
 
-        const exact = blocks.filter(b => hasExactTerm(b.text, query));
+        // ================================================================
+        // NIVEAU 1 — CORRESPONDANCE EXACTE SUR UN TERME SIGNIFICATIF
+        // ================================================================
 
-        if(exact.length){
-            // Priorité au titre puis à l'ordre d'apparition.
-            exact.sort((a,b) => {
-                const at = hasExactTerm(a.title, query) ? 1 : 0;
-                const bt = hasExactTerm(b.title, query) ? 1 : 0;
-                return bt - at || a.idx - b.idx;
+        const exactCandidates = [];
+
+        for(const term of terms){
+            const matches = blocks.filter(b =>
+                exactBoundary(b.text, term)
+            );
+
+            if(matches.length){
+                matches.forEach(block => {
+                    const titleExact =
+                        exactBoundary(block.title, term);
+
+                    exactCandidates.push({
+                        ...block,
+                        matchedTerm: term,
+                        priority: titleExact ? 100 : 50
+                    });
+                });
+            }
+        }
+
+        if(exactCandidates.length){
+
+            const unique = new Map();
+
+            exactCandidates.forEach(item => {
+                const existing = unique.get(item.idx);
+
+                if(
+                    !existing ||
+                    item.priority > existing.priority
+                ){
+                    unique.set(item.idx, item);
+                }
             });
 
-            const selected = exact.slice(0, MAX_EXACT_BLOCKS);
+            const selected = [...unique.values()]
+                .sort((a,b) =>
+                    b.priority - a.priority ||
+                    a.idx - b.idx
+                )
+                .slice(0, MAX_EXACT_BLOCKS);
 
-            console.debug('[GUIDE IA] Recherche exacte', {
-                query,
-                matches: selected.map(x => x.title || x.text.slice(0,100)),
-                contextChars: buildContext(selected).length
-            });
+            const context = buildContext(selected);
+
+            console.debug(
+                '[GUIDE IA] MATCH EXACT PRIORITAIRE',
+                {
+                    query,
+                    terms,
+                    matchedTerm:
+                        selected[0]?.matchedTerm || null,
+                    matches:
+                        selected.map(x => x.title),
+                    contextChars:
+                        context.length
+                }
+            );
 
             return {
                 mode: 'exact',
                 blocks: selected,
-                context: buildContext(selected),
-                found: true
+                context,
+                found: true,
+                exactTerm:
+                    selected[0]?.matchedTerm || null
             };
         }
 
+        // ================================================================
+        // NIVEAU 2 — RECHERCHE LEXICALE
+        // ================================================================
+
         const scored = blocks
-            .map(b => ({...b, score: scoreBlock(b, query)}))
+            .map(b => ({
+                ...b,
+                score: scoreBlock(
+                    b,
+                    query,
+                    terms
+                )
+            }))
             .filter(b => b.score > 0)
-            .sort((a,b) => b.score - a.score || a.idx - b.idx);
+            .sort((a,b) =>
+                b.score - a.score ||
+                a.idx - b.idx
+            );
 
-        const selected = scored.slice(0, MAX_FUZZY_BLOCKS);
+        const selected =
+            scored.slice(0, MAX_FUZZY_BLOCKS);
 
-        console.debug('[GUIDE IA] Recherche lexicale', {
-            query,
-            matches: selected.map(x => ({
-                title: x.title,
-                score: x.score
-            })),
-            contextChars: buildContext(selected).length
-        });
+        const context =
+            buildContext(selected);
+
+        console.debug(
+            '[GUIDE IA] RECHERCHE LEXICALE',
+            {
+                query,
+                terms,
+                matches:
+                    selected.map(x => ({
+                        title: x.title,
+                        score: x.score
+                    })),
+                contextChars:
+                    context.length
+            }
+        );
 
         return {
             mode: selected.length ? 'lexical' : 'none',
             blocks: selected,
-            context: buildContext(selected),
-            found: selected.length > 0
+            context,
+            found: selected.length > 0,
+            exactTerm: null
         };
     }
 
     async function askAIBackend(question, retrieval){
         if(!AI_ENDPOINT) return null;
 
-        const controller = new AbortController();
-        const timer = setTimeout(() => controller.abort(), AI_TIMEOUT_MS);
+        const controller =
+            new AbortController();
+
+        const timer =
+            setTimeout(
+                () => controller.abort(),
+                AI_TIMEOUT_MS
+            );
 
         try{
-            const res = await fetch(AI_ENDPOINT, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                signal: controller.signal,
-                body: JSON.stringify({
-                    question,
-                    context: retrieval.context,
-                    retrievalMode: retrieval.mode,
-                    sourceCount: retrieval.blocks.length,
-                    // Indique au Worker que le frontend a déjà effectué
-                    // la récupération de contexte.
-                    architecture: 'retrieval-first',
-                    provider: 'openai'
-                })
-            });
+
+            const res = await fetch(
+                AI_ENDPOINT,
+                {
+                    method: 'POST',
+
+                    headers: {
+                        'Content-Type':
+                            'application/json'
+                    },
+
+                    signal:
+                        controller.signal,
+
+                    body: JSON.stringify({
+                        question,
+                        context:
+                            retrieval.context,
+                        retrievalMode:
+                            retrieval.mode,
+                        exactTerm:
+                            retrieval.exactTerm,
+                        sourceCount:
+                            retrieval.blocks.length,
+                        architecture:
+                            'retrieval-first-v2',
+                        provider:
+                            'openai'
+                    })
+                }
+            );
 
             clearTimeout(timer);
 
             if(!res.ok){
-                console.warn('[GUIDE IA] Worker HTTP', res.status);
+                console.warn(
+                    '[GUIDE IA] Worker HTTP',
+                    res.status
+                );
+
                 return null;
             }
 
-            const data = await res.json();
-            return data && data.answer ? data.answer : null;
+            const data =
+                await res.json();
+
+            return data &&
+                   data.answer
+                ? data.answer
+                : null;
 
         }catch(e){
+
             clearTimeout(timer);
-            console.warn('[GUIDE IA] Appel backend impossible', e);
+
+            console.warn(
+                '[GUIDE IA] Appel backend impossible',
+                e
+            );
+
             return null;
         }
     }
 
     window.toggleGuideAI = function(){
-        const chat = document.getElementById('guideAI');
-        if(chat) chat.classList.toggle('open');
+        const chat =
+            document.getElementById('guideAI');
+
+        if(chat){
+            chat.classList.toggle('open');
+        }
     };
 
     window.guideAIKey = function(e){
-        if(e.key === 'Enter' && !e.shiftKey){
+        if(
+            e.key === 'Enter' &&
+            !e.shiftKey
+        ){
             e.preventDefault();
             sendGuideAI();
         }
     };
 
     window.sendGuideAI = function(){
-        const input = document.getElementById('aiInput');
+        const input =
+            document.getElementById('aiInput');
+
         if(!input) return;
 
-        const q = input.value.trim();
+        const q =
+            input.value.trim();
+
         if(!q) return;
 
         input.value = '';
+
         askGuideAI(q);
     };
 
     window.askGuideAI = async function(q){
+
         if(!q || !q.trim()) return;
 
-        addMsg('user', escapeHTML(q));
+        addMsg(
+            'user',
+            escapeHTML(q)
+        );
 
-        const thinking = document.createElement('div');
-        thinking.className = 'ai-msg bot ai-thinking';
-        thinking.id = 'aiThinking';
-        thinking.innerHTML = '🔎 Recherche dans le guide…';
-        document.getElementById('aiMessages').appendChild(thinking);
+        const thinking =
+            document.createElement('div');
+
+        thinking.className =
+            'ai-msg bot ai-thinking';
+
+        thinking.id =
+            'aiThinking';
+
+        thinking.innerHTML =
+            '🔎 Recherche dans le guide…';
+
+        document
+            .getElementById('aiMessages')
+            .appendChild(thinking);
+
         scrollAI();
 
-        // ÉTAPE 1 : retrouver la partie pertinente AVANT l'appel IA.
-        const retrieval = retrieveGuideContext(q);
+        // ================================================================
+        // 1. RETRIEVAL
+        // ================================================================
 
-        // ÉTAPE 2 : envoyer uniquement les extraits retrouvés au Worker.
+        const retrieval =
+            retrieveGuideContext(q);
+
+        // ================================================================
+        // 2. IA
+        // ================================================================
+
         let aiAnswer = null;
 
-        if(AI_ENDPOINT && retrieval.found){
-            thinking.innerHTML = '🤖 Analyse de la partie pertinente…';
-            aiAnswer = await askAIBackend(q, retrieval);
+        if(
+            AI_ENDPOINT &&
+            retrieval.found
+        ){
+
+            thinking.innerHTML =
+                '🤖 Analyse de la partie pertinente…';
+
+            aiAnswer =
+                await askAIBackend(
+                    q,
+                    retrieval
+                );
         }
 
-        const t = document.getElementById('aiThinking');
+        const t =
+            document.getElementById(
+                'aiThinking'
+            );
+
         if(t) t.remove();
 
+        // ================================================================
+        // 3. RÉPONSE OPENAI
+        // ================================================================
+
         if(aiAnswer){
+
             addMsg(
                 'bot',
-                escapeHTML(aiAnswer).replace(/\n/g,'<br>') +
+
+                escapeHTML(
+                    aiAnswer
+                ).replace(
+                    /\n/g,
+                    '<br>'
+                ) +
+
                 `<div class="ai-source">
                     🤖 Réponse formulée à partir de la partie pertinente du guide.
-                    <button class="ai-copy" onclick="copyAI(this)">📋 Copier la réponse</button>
+                    <button class="ai-copy" onclick="copyAI(this)">
+                        📋 Copier la réponse
+                    </button>
                 </div>`
             );
+
             return;
         }
 
-        // Si le backend n'est pas disponible, le moteur local reste utilisable.
-        const answer = buildGuideAnswer(q, retrieval);
-        addMsg('bot', answer);
+        // ================================================================
+        // 4. FALLBACK LOCAL
+        // ================================================================
+
+        addMsg(
+            'bot',
+            buildGuideAnswer(
+                q,
+                retrieval
+            )
+        );
     };
 
     function addMsg(type, html){
-        const box = document.createElement('div');
-        box.className = 'ai-msg ' + (type === 'user' ? 'user' : 'bot');
-        box.innerHTML = html;
 
-        const messages = document.getElementById('aiMessages');
+        const box =
+            document.createElement('div');
+
+        box.className =
+            'ai-msg ' +
+            (type === 'user'
+                ? 'user'
+                : 'bot');
+
+        box.innerHTML =
+            html;
+
+        const messages =
+            document.getElementById(
+                'aiMessages'
+            );
+
         if(messages){
+
             messages.appendChild(box);
+
             scrollAI();
         }
     }
 
     function scrollAI(){
-        const m = document.getElementById('aiMessages');
-        if(m) m.scrollTop = m.scrollHeight;
+
+        const m =
+            document.getElementById(
+                'aiMessages'
+            );
+
+        if(m){
+            m.scrollTop =
+                m.scrollHeight;
+        }
     }
 
-    function buildGuideAnswer(query, retrieval){
+    function buildGuideAnswer(
+        query,
+        retrieval
+    ){
+
         if(!retrieval.found){
+
             return `
-                <strong>🔎 Information non retrouvée</strong>
-                <p>Je n’ai pas trouvé de partie suffisamment pertinente dans le Guide Opérationnel pour répondre précisément à cette question.</p>
+                <strong>
+                    🔎 Information non retrouvée
+                </strong>
+
+                <p>
+                    Je n’ai pas trouvé de partie suffisamment
+                    pertinente dans le Guide Opérationnel pour
+                    répondre précisément à cette question.
+                </p>
+
                 <div class="ai-source">
-                    ⚠️ Je préfère ne pas inventer une information qui n’est pas retrouvée dans le guide.
+                    ⚠️ Je préfère ne pas inventer une information
+                    qui n’est pas retrouvée dans le guide.
                 </div>
             `;
         }
 
-        const best = retrieval.blocks[0];
-        const title = best.title || 'Information trouvée dans le guide';
-        let body = best.text;
+        const best =
+            retrieval.blocks[0];
 
-        if(body.length > 1200){
-            body = body.slice(0,1200) + '…';
+        const title =
+            best.title ||
+            'Information trouvée dans le guide';
+
+        let body =
+            best.text;
+
+        if(body.length > 1600){
+            body =
+                body.slice(0,1600) +
+                '…';
         }
 
         let html = `
-            <strong>📌 ${escapeHTML(title)}</strong>
-            <p>${escapeHTML(body)}</p>
+            <strong>
+                📌 ${escapeHTML(title)}
+            </strong>
+
+            <p>
+                ${escapeHTML(body)}
+            </p>
+
             <div class="ai-source">
-                📚 Mode local — ${retrieval.mode === 'exact'
+                📚 Mode local —
+                ${
+                    retrieval.mode === 'exact'
                     ? 'correspondance exacte trouvée dans le guide.'
-                    : 'informations pertinentes trouvées par mots-clés.'}
-                <button class="ai-copy" onclick="copyAI(this)">📋 Copier la réponse</button>
+                    : 'informations pertinentes trouvées par mots-clés.'
+                }
+
+                <button
+                    class="ai-copy"
+                    onclick="copyAI(this)"
+                >
+                    📋 Copier la réponse
+                </button>
             </div>
         `;
 
-        if(retrieval.blocks.length > 1){
-            html += `<div class="ai-source"><strong>Autres parties pertinentes :</strong>`;
-            retrieval.blocks.slice(1,4).forEach(r => {
-                html += `<br>• ${escapeHTML(r.title || r.text.slice(0,120))}`;
-            });
+        if(
+            retrieval.mode !== 'exact' &&
+            retrieval.blocks.length > 1
+        ){
+
+            html += `
+                <div class="ai-source">
+                    <strong>
+                        Autres parties pertinentes :
+                    </strong>
+            `;
+
+            retrieval.blocks
+                .slice(1,3)
+                .forEach(r => {
+
+                    html +=
+                        `<br>• ${
+                            escapeHTML(
+                                r.title ||
+                                r.text.slice(0,120)
+                            )
+                        }`;
+                });
+
             html += `</div>`;
         }
 
@@ -4572,18 +4881,36 @@ function toggleMenu(){
     }
 
     window.copyAI = function(btn){
-        const parent = btn.parentElement;
-        const text = parent.innerText
-            .replace('📋 Copier la réponse','')
-            .trim();
 
-        navigator.clipboard?.writeText(text).then(() => {
-            btn.textContent = '✅ Copié';
-            setTimeout(() => {
-                btn.textContent = '📋 Copier la réponse';
-            }, 1500);
-        }).catch(() => {});
+        const parent =
+            btn.parentElement;
+
+        const text =
+            parent.innerText
+                .replace(
+                    '📋 Copier la réponse',
+                    ''
+                )
+                .trim();
+
+        navigator.clipboard
+            ?.writeText(text)
+            .then(() => {
+
+                btn.textContent =
+                    '✅ Copié';
+
+                setTimeout(() => {
+
+                    btn.textContent =
+                        '📋 Copier la réponse';
+
+                }, 1500);
+
+            })
+            .catch(() => {});
     };
+
 })();
 </script>
 </body>
