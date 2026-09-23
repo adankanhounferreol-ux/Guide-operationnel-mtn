@@ -4199,21 +4199,30 @@ function toggleMenu(){
 <script id="guide-ai-js">
 (function(){
     // =====================================================================
-    // CONFIGURATION IA
-    // -----------------------------------------------------------------
-    // Renseignez ici l'URL de votre petit backend (voir cloudflare-worker.js
-    // fourni à côté de ce fichier). Tant que AI_ENDPOINT est vide, le bot
-    // fonctionne uniquement en mode local (recherche + reformulation basique,
-    // sans appel réseau, sans donnée transmise nulle part).
-    const AI_ENDPOINT = 'https://guide-operationnel-mtn.adankanhoun-ferreol.workers.dev';
-    const AI_TIMEOUT_MS = 12000;
+    // GUIDE INTREPIDE — ARCHITECTURE RETRIEVAL-FIRST
+    // Question -> recherche dans TOUT le guide -> extraits pertinents
+    // -> Worker Cloudflare -> modèle IA
+    //
+    // IMPORTANT :
+    // La clé API du modèle IA ne doit JAMAIS être placée dans index.html.
+    // Elle reste dans le Worker Cloudflare.
     // =====================================================================
+
+    const AI_ENDPOINT = 'https://guide-operationnel-mtn.adankanhoun-ferreol.workers.dev';
+    const AI_TIMEOUT_MS = 15000;
+
+    // Limites de sécurité : on n'envoie plus les 60 000 caractères du guide.
+    const MAX_CONTEXT_CHARS = 18000;
+    const MAX_BLOCK_CHARS = 9000;
+    const MAX_EXACT_BLOCKS = 4;
+    const MAX_FUZZY_BLOCKS = 4;
 
     const normalize = s => (s || '')
         .toLowerCase()
         .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
         .replace(/[’']/g,"'")
-        .replace(/\s+/g,' ').trim();
+        .replace(/\s+/g,' ')
+        .trim();
 
     const escapeHTML = s => String(s || '').replace(/[&<>"']/g, c => ({
         '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'
@@ -4222,66 +4231,225 @@ function toggleMenu(){
     const cleanText = el => (el.innerText || el.textContent || '')
         .replace(/\s+/g,' ').trim();
 
-    // ---------------------------------------------------------------
-    // Extrait tout le contenu utile du guide, une seule fois, pour
-    // servir de "base de connaissance" à l'IA (pas de base de données :
-    // le guide LUI-MÊME est la source).
-    // ---------------------------------------------------------------
-    let cachedGuideContext = null;
-    function getFullGuideContext(){
-        if(cachedGuideContext) return cachedGuideContext;
+    function getGuideBlocks(){
         const root = document.querySelector('main') || document.body;
-        const blocks = [...root.querySelectorAll('.procedure,.faq,.script,.box,.card')];
-        const parts = [];
-        blocks.forEach(el=>{
-            const title = el.querySelector('h3,h4,.faq-question,.script-label');
-            const t = cleanText(el);
-            if(!t || t.length < 20) return;
-            const heading = title ? cleanText(title) : '';
-            parts.push(heading ? `### ${heading}\n${t}` : t);
-        });
-        // Limite de sécurité pour rester dans une fenêtre de contexte raisonnable
-        let ctx = parts.join('\n\n');
-        const MAX_CHARS = 60000;
-        if(ctx.length > MAX_CHARS) ctx = ctx.slice(0, MAX_CHARS) + '\n…(contenu tronqué)';
-        cachedGuideContext = ctx;
-        return ctx;
+        return [...root.querySelectorAll('.procedure,.faq,.script,.box,.card')]
+            .map((el, idx) => {
+                const text = cleanText(el);
+                if(!text || text.length < 15) return null;
+
+                const titleEl = el.querySelector('h2,h3,h4,.faq-question,.script-label');
+                const title = titleEl ? cleanText(titleEl) : '';
+                const normalized = normalize(text);
+                const normalizedTitle = normalize(title);
+
+                return {
+                    el,
+                    idx,
+                    text,
+                    title,
+                    normalized,
+                    normalizedTitle
+                };
+            })
+            .filter(Boolean);
     }
 
-    // ---------------------------------------------------------------
-    // Appel au backend IA (si configuré). Le backend reçoit la question
-    // + le contenu du guide, et renvoie une réponse déjà formulée en
-    // langage naturel, fondée UNIQUEMENT sur ce contenu.
-    // ---------------------------------------------------------------
-    async function askAIBackend(question){
+    function tokenize(query){
+        return normalize(query)
+            .split(/[^a-z0-9à-ÿ]+/)
+            .filter(w => w.length >= 2);
+    }
+
+    function hasExactTerm(text, query){
+        const q = normalize(query);
+        if(!q) return false;
+
+        // Pour les acronymes / références courtes : recherche avec frontières.
+        if(q.length <= 8 && !q.includes(' ')){
+            const escaped = q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+            return new RegExp('(^|[^a-z0-9])' + escaped + '($|[^a-z0-9])','i')
+                .test(normalize(text));
+        }
+
+        return normalize(text).includes(q);
+    }
+
+    function scoreBlock(block, query){
+        const q = normalize(query);
+        const words = tokenize(query);
+        let score = 0;
+
+        if(!q) return 0;
+
+        // Correspondance exacte de la question complète.
+        if(block.normalized.includes(q)) score += 25;
+
+        // Les termes présents dans le titre sont fortement pondérés.
+        words.forEach(w => {
+            if(block.normalizedTitle.includes(w)) score += 8;
+            if(block.normalized.includes(w)){
+                const occurrences = block.normalized.split(w).length - 1;
+                score += Math.min(occurrences, 6) * 2;
+            }
+        });
+
+        // Bonus lorsque plusieurs mots de la question sont présents.
+        const matched = words.filter(w => block.normalized.includes(w)).length;
+        if(words.length) score += Math.round((matched / words.length) * 10);
+
+        return score;
+    }
+
+    function trimBlockText(text, maxChars){
+        if(text.length <= maxChars) return text;
+
+        // On garde le début du bloc : dans le guide, le titre et les
+        // premières informations sont généralement les plus structurantes.
+        return text.slice(0, maxChars) + '\n[… extrait tronqué …]';
+    }
+
+    function buildContext(blocks){
+        let total = 0;
+        const parts = [];
+
+        for(const b of blocks){
+            const body = trimBlockText(b.text, MAX_BLOCK_CHARS);
+            const part = `${b.title ? '### ' + b.title + '\n' : ''}${body}`;
+
+            if(total + part.length > MAX_CONTEXT_CHARS){
+                const remaining = MAX_CONTEXT_CHARS - total;
+                if(remaining > 300){
+                    parts.push(part.slice(0, remaining) + '\n[… contexte tronqué …]');
+                }
+                break;
+            }
+
+            parts.push(part);
+            total += part.length;
+        }
+
+        return parts.join('\n\n');
+    }
+
+    /*
+     * RETRIEVAL EN 2 NIVEAUX
+     *
+     * 1. Recherche exacte :
+     *    "P2C" doit être recherché dans tout le DOM du guide.
+     *
+     * 2. Recherche lexicale :
+     *    si aucun résultat exact, on cherche les blocs contenant les
+     *    principaux mots de la question.
+     */
+    function retrieveGuideContext(query){
+        const blocks = getGuideBlocks();
+        const q = normalize(query);
+
+        if(!q){
+            return {
+                mode: 'none',
+                blocks: [],
+                context: '',
+                found: false
+            };
+        }
+
+        const exact = blocks.filter(b => hasExactTerm(b.text, query));
+
+        if(exact.length){
+            // Priorité au titre puis à l'ordre d'apparition.
+            exact.sort((a,b) => {
+                const at = hasExactTerm(a.title, query) ? 1 : 0;
+                const bt = hasExactTerm(b.title, query) ? 1 : 0;
+                return bt - at || a.idx - b.idx;
+            });
+
+            const selected = exact.slice(0, MAX_EXACT_BLOCKS);
+
+            console.debug('[GUIDE IA] Recherche exacte', {
+                query,
+                matches: selected.map(x => x.title || x.text.slice(0,100)),
+                contextChars: buildContext(selected).length
+            });
+
+            return {
+                mode: 'exact',
+                blocks: selected,
+                context: buildContext(selected),
+                found: true
+            };
+        }
+
+        const scored = blocks
+            .map(b => ({...b, score: scoreBlock(b, query)}))
+            .filter(b => b.score > 0)
+            .sort((a,b) => b.score - a.score || a.idx - b.idx);
+
+        const selected = scored.slice(0, MAX_FUZZY_BLOCKS);
+
+        console.debug('[GUIDE IA] Recherche lexicale', {
+            query,
+            matches: selected.map(x => ({
+                title: x.title,
+                score: x.score
+            })),
+            contextChars: buildContext(selected).length
+        });
+
+        return {
+            mode: selected.length ? 'lexical' : 'none',
+            blocks: selected,
+            context: buildContext(selected),
+            found: selected.length > 0
+        };
+    }
+
+    async function askAIBackend(question, retrieval){
         if(!AI_ENDPOINT) return null;
+
         const controller = new AbortController();
-        const timer = setTimeout(()=>controller.abort(), AI_TIMEOUT_MS);
+        const timer = setTimeout(() => controller.abort(), AI_TIMEOUT_MS);
+
         try{
             const res = await fetch(AI_ENDPOINT, {
                 method: 'POST',
-                headers: {'Content-Type':'application/json'},
+                headers: {
+                    'Content-Type': 'application/json'
+                },
                 signal: controller.signal,
                 body: JSON.stringify({
                     question,
-                    context: getFullGuideContext()
+                    context: retrieval.context,
+                    retrievalMode: retrieval.mode,
+                    sourceCount: retrieval.blocks.length,
+                    // Indique au Worker que le frontend a déjà effectué
+                    // la récupération de contexte.
+                    architecture: 'retrieval-first',
+                    provider: 'openai'
                 })
             });
+
             clearTimeout(timer);
-            if(!res.ok) return null;
+
+            if(!res.ok){
+                console.warn('[GUIDE IA] Worker HTTP', res.status);
+                return null;
+            }
+
             const data = await res.json();
             return data && data.answer ? data.answer : null;
+
         }catch(e){
             clearTimeout(timer);
+            console.warn('[GUIDE IA] Appel backend impossible', e);
             return null;
         }
     }
 
     window.toggleGuideAI = function(){
-        document.getElementById('guideAI').classList.toggle('open');
-        if(document.getElementById('guideAI').classList.contains('open')){
-            setTimeout(()=>document.getElementById('aiInput').focus(),100);
-        }
+        const chat = document.getElementById('guideAI');
+        if(chat) chat.classList.toggle('open');
     };
 
     window.guideAIKey = function(e){
@@ -4293,176 +4461,128 @@ function toggleMenu(){
 
     window.sendGuideAI = function(){
         const input = document.getElementById('aiInput');
+        if(!input) return;
+
         const q = input.value.trim();
         if(!q) return;
-        input.value='';
+
+        input.value = '';
         askGuideAI(q);
     };
 
     window.askGuideAI = async function(q){
+        if(!q || !q.trim()) return;
+
         addMsg('user', escapeHTML(q));
+
         const thinking = document.createElement('div');
-        thinking.className='ai-msg bot ai-thinking';
-        thinking.id='aiThinking';
-        thinking.textContent = AI_ENDPOINT ? 'Réflexion en cours…' : 'Recherche dans le guide…';
+        thinking.className = 'ai-msg bot ai-thinking';
+        thinking.id = 'aiThinking';
+        thinking.innerHTML = '🔎 Recherche dans le guide…';
         document.getElementById('aiMessages').appendChild(thinking);
         scrollAI();
 
-        // 1) On tente une vraie formulation IA si un backend est configuré
+        // ÉTAPE 1 : retrouver la partie pertinente AVANT l'appel IA.
+        const retrieval = retrieveGuideContext(q);
+
+        // ÉTAPE 2 : envoyer uniquement les extraits retrouvés au Worker.
         let aiAnswer = null;
-        if(AI_ENDPOINT){
-            aiAnswer = await askAIBackend(q);
+
+        if(AI_ENDPOINT && retrieval.found){
+            thinking.innerHTML = '🤖 Analyse de la partie pertinente…';
+            aiAnswer = await askAIBackend(q, retrieval);
         }
 
         const t = document.getElementById('aiThinking');
         if(t) t.remove();
 
         if(aiAnswer){
-            addMsg('bot', escapeHTML(aiAnswer).replace(/\n/g,'<br>') +
-                `<div class="ai-source">🤖 Réponse formulée par l’assistant à partir du guide.
-                <button class="ai-copy" onclick="copyAI(this)">📋 Copier la réponse</button></div>`);
+            addMsg(
+                'bot',
+                escapeHTML(aiAnswer).replace(/\n/g,'<br>') +
+                `<div class="ai-source">
+                    🤖 Réponse formulée à partir de la partie pertinente du guide.
+                    <button class="ai-copy" onclick="copyAI(this)">📋 Copier la réponse</button>
+                </div>`
+            );
             return;
         }
 
-        // 2) Sinon, on retombe sur le moteur local (recherche + reformulation)
-        const answer = buildGuideAnswer(q);
+        // Si le backend n'est pas disponible, le moteur local reste utilisable.
+        const answer = buildGuideAnswer(q, retrieval);
         addMsg('bot', answer);
     };
 
     function addMsg(type, html){
-        const box=document.createElement('div');
-        box.className='ai-msg '+type;
-        box.innerHTML=html;
-        document.getElementById('aiMessages').appendChild(box);
-        scrollAI();
+        const box = document.createElement('div');
+        box.className = 'ai-msg ' + (type === 'user' ? 'user' : 'bot');
+        box.innerHTML = html;
+
+        const messages = document.getElementById('aiMessages');
+        if(messages){
+            messages.appendChild(box);
+            scrollAI();
+        }
     }
 
     function scrollAI(){
-        const m=document.getElementById('aiMessages');
-        m.scrollTop=m.scrollHeight;
+        const m = document.getElementById('aiMessages');
+        if(m) m.scrollTop = m.scrollHeight;
     }
 
-    function getRelevantBlocks(query){
-        const root=document.querySelector('main') || document.body;
-        const blocks=[...root.querySelectorAll('.procedure,.faq,.script,.box,.card')];
-        const q=normalize(query);
-        const words=q.split(/[^a-z0-9à-ÿ]+/).filter(w=>w.length>=3);
-
-        return blocks.map((el,idx)=>{
-            const text=cleanText(el);
-            const n=normalize(text);
-            if(!text || n.length<30) return null;
-
-            let score=0;
-            words.forEach(w=>{
-                if(n.includes(w)) score += n.split(w).length-1;
-            });
-
-            // Bonus pour les titres et réponses FAQ
-            const title=el.querySelector('h3,h4,.faq-question,.script-label');
-            if(title){
-                const nt=normalize(cleanText(title));
-                words.forEach(w=>{ if(nt.includes(w)) score += 5; });
-            }
-            return {el,text,score,idx};
-        }).filter(Boolean).filter(x=>x.score>0)
-          .sort((a,b)=>b.score-a.score || a.idx-b.idx);
-    }
-
-    function buildGuideAnswer(query){
-        const q=normalize(query);
-
-        // Réponse spécialisée : CASHBACK, directement issue du GUIDE.
-        if(q.includes('cashback') || q.includes('bonus') && (q.includes('forfait') || q.includes('momo'))){
+    function buildGuideAnswer(query, retrieval){
+        if(!retrieval.found){
             return `
-                <strong>💰 Cashback ciblé sur les forfaits</strong>
-                <p>Le guide indique qu’une campagne de <strong>Cashback de 10 %</strong> est en cours dans le cadre de la réactivation des clients MoMo.</p>
-                <ul>
-                    <li>🎯 Le bonus concerne les clients ciblés comme <strong>inactifs sur MoMo depuis au moins 45 jours</strong>.</li>
-                    <li>📱 Le client doit avoir activé un <strong>forfait via MoMo</strong>.</li>
-                    <li>💰 Le cashback correspond à <strong>10 % du montant du forfait</strong>, avec un plafond de <strong>100 FCFA</strong>.</li>
-                    <li>❌ Les achats de crédit simple (airtime) ne sont pas concernés.</li>
-                </ul>
-                <div class="ai-source"><strong>Formulation client :</strong><br>
-                « Cette offre de cashback est réservée aux clients éligibles à la campagne. Si vous avez été ciblé et avez activé un forfait via MoMo, vous bénéficiez de 10 % du montant du forfait, dans la limite de 100 FCFA. Les achats de crédit simple ne sont pas concernés. Nous allons vérifier votre situation afin de vous apporter la meilleure assistance. »
-                <br><button class="ai-copy" onclick="copyAI(this)">📋 Copier la réponse</button></div>
+                <strong>🔎 Information non retrouvée</strong>
+                <p>Je n’ai pas trouvé de partie suffisamment pertinente dans le Guide Opérationnel pour répondre précisément à cette question.</p>
+                <div class="ai-source">
+                    ⚠️ Je préfère ne pas inventer une information qui n’est pas retrouvée dans le guide.
+                </div>
             `;
         }
 
-        const results=getRelevantBlocks(query).slice(0,3);
+        const best = retrieval.blocks[0];
+        const title = best.title || 'Information trouvée dans le guide';
+        let body = best.text;
 
-        if(!results.length){
-            return `
-                <strong>Je n’ai pas trouvé une réponse suffisamment précise dans le guide.</strong>
-                <p>Essayez avec des mots-clés plus précis, par exemple : <em>cashback, MoMoKash, forfait internet, roaming, transfert, Reset PIN, PUK, réclamation</em>.</p>
-                <div class="ai-source">⚠️ Pour cette version, je préfère ne pas inventer une information qui n’est pas retrouvée dans le guide.</div>
-            `;
+        if(body.length > 1200){
+            body = body.slice(0,1200) + '…';
         }
 
-        const best=results[0];
-        let text=best.text;
-        if(text.length>900) text=text.slice(0,900)+'…';
+        let html = `
+            <strong>📌 ${escapeHTML(title)}</strong>
+            <p>${escapeHTML(body)}</p>
+            <div class="ai-source">
+                📚 Mode local — ${retrieval.mode === 'exact'
+                    ? 'correspondance exacte trouvée dans le guide.'
+                    : 'informations pertinentes trouvées par mots-clés.'}
+                <button class="ai-copy" onclick="copyAI(this)">📋 Copier la réponse</button>
+            </div>
+        `;
 
-        // Formalisation légère de la réponse
-        let title=best.el.querySelector('h3,h4,.faq-question,.script-label');
-        title=title ? cleanText(title) : 'Information trouvée dans le guide';
-
-        const html_intro = humanizeIntro(query);
-        const body = humanizeBody(text);
-
-        let html=`<strong>📌 ${escapeHTML(title)}</strong><p>${html_intro} ${escapeHTML(body)}</p>`;
-
-        if(results.length>1){
-            html+=`<div class="ai-source"><strong>Autres informations pertinentes :</strong>`;
-            results.slice(1,3).forEach(r=>{
-                let t=r.el.querySelector('h3,h4,.faq-question,.script-label');
-                html+=`<br>• ${escapeHTML(t ? cleanText(t) : r.text.slice(0,120))}`;
+        if(retrieval.blocks.length > 1){
+            html += `<div class="ai-source"><strong>Autres parties pertinentes :</strong>`;
+            retrieval.blocks.slice(1,4).forEach(r => {
+                html += `<br>• ${escapeHTML(r.title || r.text.slice(0,120))}`;
             });
-            html+=`</div>`;
+            html += `</div>`;
         }
+
         return html;
     }
 
-    // ---------------------------------------------------------------
-    // Habillage léger des réponses locales : varie les formulations
-    // d'introduction et enchaîne les phrases avec des connecteurs, pour
-    // éviter l'effet "copier-coller brut" du bloc trouvé dans le guide.
-    // (Ce n'est pas de la vraie génération de langage : c'est un moteur
-    // local sans IA — pour une vraie reformulation, voir AI_ENDPOINT.)
-    // ---------------------------------------------------------------
-    function humanizeIntro(query){
-        const intros = [
-            "D’après le guide,",
-            "Selon la procédure en vigueur,",
-            "Voici ce que prévoit le guide sur ce sujet :",
-            "La documentation indique que",
-            "Pour répondre précisément à votre question,"
-        ];
-        let h = 0;
-        for(const c of query) h = (h*31 + c.charCodeAt(0)) % 997;
-        return intros[h % intros.length];
-    }
+    window.copyAI = function(btn){
+        const parent = btn.parentElement;
+        const text = parent.innerText
+            .replace('📋 Copier la réponse','')
+            .trim();
 
-    function humanizeBody(text){
-        // Découpe en phrases et réinjecte des connecteurs pour fluidifier
-        const sentences = text.split(/(?<=[.!?])\s+/).filter(Boolean);
-        if(sentences.length <= 1) return text;
-        const connectors = ["De plus,", "Par ailleurs,", "Il est aussi précisé que", "Enfin,"];
-        return sentences.map((s,i)=>{
-            if(i===0) return s;
-            const c = connectors[(i-1) % connectors.length];
-            const low = s.charAt(0).toLowerCase() + s.slice(1);
-            return `${c} ${low}`;
-        }).join(' ');
-    }
-
-    window.copyAI=function(btn){
-        const parent=btn.parentElement;
-        const text=parent.innerText.replace('📋 Copier la réponse','').trim();
-        navigator.clipboard?.writeText(text).then(()=>{
-            btn.textContent='✅ Copié';
-            setTimeout(()=>btn.textContent='📋 Copier la réponse',1500);
-        }).catch(()=>{});
+        navigator.clipboard?.writeText(text).then(() => {
+            btn.textContent = '✅ Copié';
+            setTimeout(() => {
+                btn.textContent = '📋 Copier la réponse';
+            }, 1500);
+        }).catch(() => {});
     };
 })();
 </script>
