@@ -4199,21 +4199,28 @@ function toggleMenu(){
 <script id="guide-ai-js">
 (function(){
     // =====================================================================
-    // GUIDE INTREPIDE — RETRIEVAL-FIRST V2
+    // GUIDE INTREPIDE — RETRIEVAL-FIRST V3
     //
-    // Question -> détection des termes exacts -> bloc(s) prioritaires
-    // -> contexte ciblé -> Cloudflare Worker -> OpenAI
+    // Question
+    //   -> terme exact prioritaire
+    //   -> recherche du terme dans le bloc
+    //   -> extraction de la section pertinente
+    //   -> Worker Cloudflare
+    //   -> OpenAI
     //
-    // La clé API reste exclusivement dans Cloudflare.
+    // Objectif : éviter d'envoyer un gros bloc contenant plusieurs sujets
+    // (ex. MoMo Transactions Informations + P2C) lorsque seul P2C est demandé.
     // =====================================================================
 
     const AI_ENDPOINT = 'https://guide-operationnel-mtn.adankanhoun-ferreol.workers.dev';
     const AI_TIMEOUT_MS = 15000;
 
     const MAX_CONTEXT_CHARS = 18000;
-    const MAX_BLOCK_CHARS = 9000;
-    const MAX_EXACT_BLOCKS = 3;
-    const MAX_FUZZY_BLOCKS = 2;
+    const MAX_EXTRACT_CHARS = 12000;
+    const MAX_EXACT_RESULTS = 2;
+    const MAX_FUZZY_RESULTS = 2;
+
+    const SELECTORS = '.procedure,.faq,.script,.box,.card';
 
     const normalize = s => (s || '')
         .toLowerCase()
@@ -4232,35 +4239,25 @@ function toggleMenu(){
     function getGuideBlocks(){
         const root = document.querySelector('main') || document.body;
 
-        return [...root.querySelectorAll(
-            '.procedure,.faq,.script,.box,.card'
-        )]
-        .map((el, idx) => {
-            const text = cleanText(el);
-            if(!text || text.length < 15) return null;
+        return [...root.querySelectorAll(SELECTORS)]
+            .map((el, idx) => {
+                const text = cleanText(el);
+                if(!text || text.length < 15) return null;
 
-            const titleEl = el.querySelector(
-                'h2,h3,h4,.faq-question,.script-label'
-            );
+                const titleEl = el.querySelector(
+                    'h2,h3,h4,.faq-question,.script-label'
+                );
 
-            const title = titleEl ? cleanText(titleEl) : '';
-
-            return {
-                el,
-                idx,
-                text,
-                title,
-                normalized: normalize(text),
-                normalizedTitle: normalize(title)
-            };
-        })
-        .filter(Boolean);
-    }
-
-    function tokenize(query){
-        return normalize(query)
-            .split(/[^a-z0-9à-ÿ]+/)
-            .filter(w => w.length >= 2);
+                return {
+                    el,
+                    idx,
+                    text,
+                    title: titleEl ? cleanText(titleEl) : '',
+                    normalized: normalize(text),
+                    normalizedTitle: titleEl ? normalize(cleanText(titleEl)) : ''
+                };
+            })
+            .filter(Boolean);
     }
 
     function exactBoundary(text, term){
@@ -4277,17 +4274,22 @@ function toggleMenu(){
         ).test(t);
     }
 
-    /*
-     * Détecte les expressions significatives de la question.
-     *
-     * Exemple :
-     * "C'est quoi P2C et comment fonctionne-t-il ?"
-     * devient notamment :
-     * P2C
-     *
-     * Les mots génériques sont ignorés afin d'éviter que des blocs
-     * comme "MoMo Transactions Informations" passent devant P2C.
-     */
+    function findExactPosition(text, term){
+        const original = text || '';
+        const nText = normalize(original);
+        const nTerm = normalize(term);
+        if(!nTerm) return -1;
+
+        // On cherche dans le texte normalisé. Pour une extraction destinée
+        // à l'IA, une approximation proportionnelle suffit ensuite.
+        const pos = nText.indexOf(nTerm);
+        if(pos < 0) return -1;
+
+        return Math.round(
+            pos * (original.length / Math.max(nText.length, 1))
+        );
+    }
+
     function extractSearchTerms(query){
         const q = normalize(query);
 
@@ -4298,7 +4300,7 @@ function toggleMenu(){
             'mon','ne','nos','notre','nous','on','ou','par','pour',
             'que','quel','quelle','quels','quelles','qui','quoi','se',
             'son','sur','ta','te','tes','ton','un','une','vers','vous',
-            'et-il','et-elle'
+            'et-il','et-elle','c','est'
         ]);
 
         const words = q
@@ -4307,42 +4309,141 @@ function toggleMenu(){
             .filter(w => w.length >= 2)
             .filter(w => !stopWords.has(w));
 
-        // Les acronymes / références alphanumériques courtes sont
-        // particulièrement importants : P2C, PUK, PI-SPI, etc.
+        // Priorité aux acronymes, codes et références :
+        // P2C, PUK, PI-SPI, USSD, etc.
         const priority = words.filter(w =>
             /[0-9]/.test(w) ||
-            /^[a-z]{2,5}$/.test(w)
+            /^[a-z]{2,6}$/.test(w)
         );
 
-        return [...new Set([
-            ...priority,
-            ...words
-        ])];
+        return [...new Set([...priority, ...words])];
     }
 
-    function trimBlockText(text, maxChars){
-        if(text.length <= maxChars) return text;
+    /*
+     * Découpe un gros bloc autour du terme recherché.
+     *
+     * Exemple :
+     * [MoMo Transactions Informations]
+     * [P2C — Transfert vers un non-abonné]
+     * [Grille tarifaire P2C]
+     *
+     * Pour "P2C", on évite de transmettre tout le conteneur.
+     */
+    function extractRelevantSection(text, term){
+        const source = text || '';
 
-        return text.slice(0, maxChars) +
-            '\n[… extrait tronqué …]';
+        if(!term || !source){
+            return source.slice(0, MAX_EXTRACT_CHARS);
+        }
+
+        const position = findExactPosition(source, term);
+
+        if(position < 0){
+            return source.slice(0, MAX_EXTRACT_CHARS);
+        }
+
+        // Cherche les séparateurs structurels les plus proches.
+        const before = source.slice(0, position);
+        const after = source.slice(position);
+
+        const headingPatterns = [
+            /\n(?=[A-ZÀ-Ÿ][A-ZÀ-Ÿ0-9ÉÈÊËÀÂÄÎÏÔÖÙÛÜÇ'’& +\-]{3,}(?:\n|$))/g,
+            /\n(?=(?:🆕|💸|💳|📌|🛠|📱|🌍|📞|⚠️|ℹ️|🔹|🔸|➡️|✅|❌))/g
+        ];
+
+        let start = Math.max(0, position - 3500);
+        let end = Math.min(source.length, position + 8500);
+
+        // Si une séparation claire est trouvée peu avant le terme,
+        // elle devient le début de l'extrait.
+        for(const pattern of headingPatterns){
+            const matches = [...before.matchAll(pattern)];
+            if(matches.length){
+                const last = matches[matches.length - 1];
+                const candidate = last.index + 1;
+
+                if(candidate >= position - 3500){
+                    start = candidate;
+                    break;
+                }
+            }
+        }
+
+        // Recherche de la prochaine séparation après le terme.
+        for(const pattern of headingPatterns){
+            const match = pattern.exec(after);
+            if(match && match.index > 100){
+                const candidate = position + match.index + 1;
+                if(candidate > position && candidate < end){
+                    end = candidate;
+                    break;
+                }
+            }
+        }
+
+        let extracted = source.slice(start, end).trim();
+
+        // Si l'extrait est trop long, garder une fenêtre centrée sur le terme.
+        if(extracted.length > MAX_EXTRACT_CHARS){
+            const localPos = Math.max(0, position - start);
+            const half = Math.floor(MAX_EXTRACT_CHARS / 2);
+
+            let s = Math.max(0, localPos - half);
+            let e = Math.min(
+                extracted.length,
+                s + MAX_EXTRACT_CHARS
+            );
+
+            if(e - s < MAX_EXTRACT_CHARS){
+                s = Math.max(0, e - MAX_EXTRACT_CHARS);
+            }
+
+            extracted =
+                extracted.slice(s, e).trim() +
+                '\n[… section extraite …]';
+        }
+
+        return extracted;
     }
 
-    function buildContext(blocks){
+    function scoreBlock(block, query, terms){
+        const q = normalize(query);
+        let score = 0;
+
+        if(block.normalized.includes(q)){
+            score += 30;
+        }
+
+        terms.forEach(term => {
+            if(exactBoundary(block.title, term)){
+                score += 40;
+            }
+
+            if(exactBoundary(block.text, term)){
+                score += 15;
+            }
+
+            if(term.length >= 4 &&
+               block.normalized.includes(term)){
+                score += 4;
+            }
+        });
+
+        return score;
+    }
+
+    function buildContext(items){
         let total = 0;
         const parts = [];
 
-        for(const b of blocks){
-            const body = trimBlockText(
-                b.text,
-                MAX_BLOCK_CHARS
-            );
+        for(const item of items){
+            const text = item.extracted || item.text || '';
 
             const part =
-                `${b.title ? '### ' + b.title + '\n' : ''}${body}`;
+                `${item.title ? '### ' + item.title + '\n' : ''}${text}`;
 
             if(total + part.length > MAX_CONTEXT_CHARS){
-                const remaining =
-                    MAX_CONTEXT_CHARS - total;
+                const remaining = MAX_CONTEXT_CHARS - total;
 
                 if(remaining > 300){
                     parts.push(
@@ -4350,7 +4451,6 @@ function toggleMenu(){
                         '\n[… contexte tronqué …]'
                     );
                 }
-
                 break;
             }
 
@@ -4361,170 +4461,156 @@ function toggleMenu(){
         return parts.join('\n\n');
     }
 
-    function scoreBlock(block, query, terms){
-        const q = normalize(query);
-        let score = 0;
-
-        // Question complète.
-        if(block.normalized.includes(q)){
-            score += 30;
-        }
-
-        terms.forEach(term => {
-
-            // Présence exacte dans le titre = très forte priorité.
-            if(exactBoundary(block.title, term)){
-                score += 30;
-            }
-
-            // Présence exacte dans le bloc.
-            if(exactBoundary(block.text, term)){
-                score += 12;
-            }
-
-            // Pour les termes longs, présence simple.
-            if(term.length >= 4 &&
-               block.normalized.includes(term)){
-                score += 4;
-            }
-        });
-
-        return score;
-    }
-
     function retrieveGuideContext(query){
         const blocks = getGuideBlocks();
         const terms = extractSearchTerms(query);
 
         if(!terms.length){
             return {
-                mode: 'none',
-                blocks: [],
-                context: '',
-                found: false,
-                exactTerm: null
+                mode:'none',
+                blocks:[],
+                context:'',
+                found:false,
+                exactTerm:null
             };
         }
 
         // ================================================================
-        // NIVEAU 1 — CORRESPONDANCE EXACTE SUR UN TERME SIGNIFICATIF
+        // NIVEAU 1 : TERME EXACT
         // ================================================================
 
-        const exactCandidates = [];
+        const exact = [];
 
         for(const term of terms){
-            const matches = blocks.filter(b =>
-                exactBoundary(b.text, term)
-            );
 
-            if(matches.length){
-                matches.forEach(block => {
-                    const titleExact =
-                        exactBoundary(block.title, term);
+            for(const block of blocks){
 
-                    exactCandidates.push({
-                        ...block,
-                        matchedTerm: term,
-                        priority: titleExact ? 100 : 50
-                    });
+                if(!exactBoundary(block.text, term)){
+                    continue;
+                }
+
+                const titleMatch =
+                    exactBoundary(block.title, term);
+
+                const extracted =
+                    extractRelevantSection(
+                        block.text,
+                        term
+                    );
+
+                exact.push({
+                    ...block,
+                    matchedTerm: term,
+                    extracted,
+                    priority:
+                        titleMatch ? 100 : 50
                 });
             }
         }
 
-        if(exactCandidates.length){
+        if(exact.length){
 
             const unique = new Map();
 
-            exactCandidates.forEach(item => {
-                const existing = unique.get(item.idx);
+            exact.forEach(item => {
+                const key =
+                    item.idx + '|' + item.matchedTerm;
 
-                if(
-                    !existing ||
-                    item.priority > existing.priority
-                ){
-                    unique.set(item.idx, item);
+                if(!unique.has(key)){
+                    unique.set(key, item);
                 }
             });
 
-            const selected = [...unique.values()]
-                .sort((a,b) =>
-                    b.priority - a.priority ||
-                    a.idx - b.idx
-                )
-                .slice(0, MAX_EXACT_BLOCKS);
+            const selected =
+                [...unique.values()]
+                    .sort((a,b) =>
+                        b.priority - a.priority ||
+                        a.idx - b.idx
+                    )
+                    .slice(0, MAX_EXACT_RESULTS);
 
-            const context = buildContext(selected);
+            const context =
+                buildContext(selected);
 
             console.debug(
-                '[GUIDE IA] MATCH EXACT PRIORITAIRE',
+                '[GUIDE IA V3] SECTION EXACTE',
                 {
                     query,
                     terms,
-                    matchedTerm:
-                        selected[0]?.matchedTerm || null,
-                    matches:
-                        selected.map(x => x.title),
-                    contextChars:
-                        context.length
+                    selected:
+                        selected.map(x => ({
+                            title:x.title,
+                            term:x.matchedTerm,
+                            chars:x.extracted.length
+                        })),
+                    contextChars:context.length
                 }
             );
 
             return {
-                mode: 'exact',
-                blocks: selected,
+                mode:'exact-section',
+                blocks:selected,
                 context,
-                found: true,
+                found:true,
                 exactTerm:
                     selected[0]?.matchedTerm || null
             };
         }
 
         // ================================================================
-        // NIVEAU 2 — RECHERCHE LEXICALE
+        // NIVEAU 2 : RECHERCHE LEXICALE
         // ================================================================
 
-        const scored = blocks
-            .map(b => ({
-                ...b,
-                score: scoreBlock(
-                    b,
-                    query,
-                    terms
+        const scored =
+            blocks
+                .map(block => ({
+                    ...block,
+                    score:
+                        scoreBlock(
+                            block,
+                            query,
+                            terms
+                        )
+                }))
+                .filter(x => x.score > 0)
+                .sort((a,b) =>
+                    b.score - a.score ||
+                    a.idx - b.idx
                 )
-            }))
-            .filter(b => b.score > 0)
-            .sort((a,b) =>
-                b.score - a.score ||
-                a.idx - b.idx
-            );
-
-        const selected =
-            scored.slice(0, MAX_FUZZY_BLOCKS);
+                .slice(0, MAX_FUZZY_RESULTS)
+                .map(x => ({
+                    ...x,
+                    extracted:x.text.slice(
+                        0,
+                        MAX_EXTRACT_CHARS
+                    )
+                }));
 
         const context =
-            buildContext(selected);
+            buildContext(scored);
 
         console.debug(
-            '[GUIDE IA] RECHERCHE LEXICALE',
+            '[GUIDE IA V3] RECHERCHE LEXICALE',
             {
                 query,
                 terms,
-                matches:
-                    selected.map(x => ({
-                        title: x.title,
-                        score: x.score
+                selected:
+                    scored.map(x => ({
+                        title:x.title,
+                        score:x.score
                     })),
-                contextChars:
-                    context.length
+                contextChars:context.length
             }
         );
 
         return {
-            mode: selected.length ? 'lexical' : 'none',
-            blocks: selected,
+            mode:scored.length
+                ? 'lexical'
+                : 'none',
+            blocks:scored,
             context,
-            found: selected.length > 0,
-            exactTerm: null
+            found:scored.length > 0,
+            exactTerm:null
         };
     }
 
@@ -4542,62 +4628,55 @@ function toggleMenu(){
 
         try{
 
-            const res = await fetch(
-                AI_ENDPOINT,
-                {
-                    method: 'POST',
-
-                    headers: {
-                        'Content-Type':
-                            'application/json'
-                    },
-
-                    signal:
-                        controller.signal,
-
-                    body: JSON.stringify({
-                        question,
-                        context:
-                            retrieval.context,
-                        retrievalMode:
-                            retrieval.mode,
-                        exactTerm:
-                            retrieval.exactTerm,
-                        sourceCount:
-                            retrieval.blocks.length,
-                        architecture:
-                            'retrieval-first-v2',
-                        provider:
-                            'openai'
-                    })
-                }
-            );
+            const res =
+                await fetch(
+                    AI_ENDPOINT,
+                    {
+                        method:'POST',
+                        headers:{
+                            'Content-Type':
+                                'application/json'
+                        },
+                        signal:
+                            controller.signal,
+                        body:JSON.stringify({
+                            question,
+                            context:
+                                retrieval.context,
+                            retrievalMode:
+                                retrieval.mode,
+                            exactTerm:
+                                retrieval.exactTerm,
+                            sourceCount:
+                                retrieval.blocks.length,
+                            architecture:
+                                'retrieval-first-v3',
+                            provider:'openai'
+                        })
+                    }
+                );
 
             clearTimeout(timer);
 
             if(!res.ok){
                 console.warn(
-                    '[GUIDE IA] Worker HTTP',
+                    '[GUIDE IA V3] Worker HTTP',
                     res.status
                 );
-
                 return null;
             }
 
             const data =
                 await res.json();
 
-            return data &&
-                   data.answer
-                ? data.answer
-                : null;
+            return data?.answer || null;
 
         }catch(e){
 
             clearTimeout(timer);
 
             console.warn(
-                '[GUIDE IA] Appel backend impossible',
+                '[GUIDE IA V3] Backend indisponible',
                 e
             );
 
@@ -4659,7 +4738,7 @@ function toggleMenu(){
             'aiThinking';
 
         thinking.innerHTML =
-            '🔎 Recherche dans le guide…';
+            '🔎 Recherche précise dans le guide…';
 
         document
             .getElementById('aiMessages')
@@ -4667,16 +4746,8 @@ function toggleMenu(){
 
         scrollAI();
 
-        // ================================================================
-        // 1. RETRIEVAL
-        // ================================================================
-
         const retrieval =
             retrieveGuideContext(q);
-
-        // ================================================================
-        // 2. IA
-        // ================================================================
 
         let aiAnswer = null;
 
@@ -4686,7 +4757,7 @@ function toggleMenu(){
         ){
 
             thinking.innerHTML =
-                '🤖 Analyse de la partie pertinente…';
+                '🤖 Analyse de la section pertinente…';
 
             aiAnswer =
                 await askAIBackend(
@@ -4702,24 +4773,16 @@ function toggleMenu(){
 
         if(t) t.remove();
 
-        // ================================================================
-        // 3. RÉPONSE OPENAI
-        // ================================================================
-
         if(aiAnswer){
 
             addMsg(
                 'bot',
-
                 escapeHTML(
                     aiAnswer
-                ).replace(
-                    /\n/g,
-                    '<br>'
-                ) +
+                ).replace(/\n/g,'<br>') +
 
                 `<div class="ai-source">
-                    🤖 Réponse formulée à partir de la partie pertinente du guide.
+                    🤖 Réponse formulée à partir de la section pertinente du guide.
                     <button class="ai-copy" onclick="copyAI(this)">
                         📋 Copier la réponse
                     </button>
@@ -4728,10 +4791,6 @@ function toggleMenu(){
 
             return;
         }
-
-        // ================================================================
-        // 4. FALLBACK LOCAL
-        // ================================================================
 
         addMsg(
             'bot',
@@ -4753,8 +4812,7 @@ function toggleMenu(){
                 ? 'user'
                 : 'bot');
 
-        box.innerHTML =
-            html;
+        box.innerHTML = html;
 
         const messages =
             document.getElementById(
@@ -4762,9 +4820,7 @@ function toggleMenu(){
             );
 
         if(messages){
-
             messages.appendChild(box);
-
             scrollAI();
         }
     }
@@ -4793,13 +4849,10 @@ function toggleMenu(){
                 <strong>
                     🔎 Information non retrouvée
                 </strong>
-
                 <p>
-                    Je n’ai pas trouvé de partie suffisamment
-                    pertinente dans le Guide Opérationnel pour
-                    répondre précisément à cette question.
+                    Je n’ai pas trouvé de section suffisamment
+                    pertinente dans le Guide Opérationnel.
                 </p>
-
                 <div class="ai-source">
                     ⚠️ Je préfère ne pas inventer une information
                     qui n’est pas retrouvée dans le guide.
@@ -4812,18 +4865,19 @@ function toggleMenu(){
 
         const title =
             best.title ||
-            'Information trouvée dans le guide';
+            `Section ${best.matchedTerm || ''}`;
 
         let body =
+            best.extracted ||
             best.text;
 
-        if(body.length > 1600){
+        if(body.length > 1800){
             body =
-                body.slice(0,1600) +
+                body.slice(0,1800) +
                 '…';
         }
 
-        let html = `
+        return `
             <strong>
                 📌 ${escapeHTML(title)}
             </strong>
@@ -4835,9 +4889,9 @@ function toggleMenu(){
             <div class="ai-source">
                 📚 Mode local —
                 ${
-                    retrieval.mode === 'exact'
-                    ? 'correspondance exacte trouvée dans le guide.'
-                    : 'informations pertinentes trouvées par mots-clés.'
+                    retrieval.mode === 'exact-section'
+                    ? 'section exacte extraite autour du terme recherché.'
+                    : 'section trouvée par recherche lexicale.'
                 }
 
                 <button
@@ -4848,36 +4902,6 @@ function toggleMenu(){
                 </button>
             </div>
         `;
-
-        if(
-            retrieval.mode !== 'exact' &&
-            retrieval.blocks.length > 1
-        ){
-
-            html += `
-                <div class="ai-source">
-                    <strong>
-                        Autres parties pertinentes :
-                    </strong>
-            `;
-
-            retrieval.blocks
-                .slice(1,3)
-                .forEach(r => {
-
-                    html +=
-                        `<br>• ${
-                            escapeHTML(
-                                r.title ||
-                                r.text.slice(0,120)
-                            )
-                        }`;
-                });
-
-            html += `</div>`;
-        }
-
-        return html;
     }
 
     window.copyAI = function(btn){
@@ -4901,11 +4925,9 @@ function toggleMenu(){
                     '✅ Copié';
 
                 setTimeout(() => {
-
                     btn.textContent =
                         '📋 Copier la réponse';
-
-                }, 1500);
+                },1500);
 
             })
             .catch(() => {});
